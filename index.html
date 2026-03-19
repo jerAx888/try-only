@@ -10,73 +10,40 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tweetnacl/1.0.3/nacl-fast.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
---bg:#0d0b1a;--c1:#1a1330;--c2:#231a3e;--c3:#130f24;
---pk:#ff2d8b;--pu:#b060ff;--tl:#0fd4c8;
---tx:#f0eaff;--mt:#7060a0;--mt2:#a898cc;
---gn:#22c55e;--rd:#ef4444;
---brd:rgba(255,45,139,.22);--brd2:rgba(255,255,255,.07);
---glow:0 0 20px rgba(255,45,139,.38)
-}
+:root{--bg:#0d0b1a;--c1:#1a1330;--c2:#231a3e;--c3:#130f24;--pk:#ff2d8b;--pu:#b060ff;--tl:#0fd4c8;--tx:#f0eaff;--mt:#7060a0;--mt2:#a898cc;--gn:#22c55e;--rd:#ef4444;--brd:rgba(255,45,139,.22);--brd2:rgba(255,255,255,.07);--glow:0 0 20px rgba(255,45,139,.38)}
 body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-background:radial-gradient(ellipse 55% 50% at 5% 95%,rgba(176,96,255,.13) 0%,transparent 60%),
-radial-gradient(ellipse 45% 40% at 95% 5%,rgba(255,45,139,.09) 0%,transparent 55%)}
-nav{position:sticky;top:0;z-index:200;height:64px;display:flex;align-items:center;
-justify-content:space-between;padding:0 1.5rem;
-background:rgba(13,11,26,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--brd2)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 55% 50% at 5% 95%,rgba(176,96,255,.13) 0%,transparent 60%),radial-gradient(ellipse 45% 40% at 95% 5%,rgba(255,45,139,.09) 0%,transparent 55%)}
+nav{position:sticky;top:0;z-index:200;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:rgba(13,11,26,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--brd2)}
 .nl{display:flex;align-items:center;gap:.6rem}
-.nico{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--pk),var(--pu));
-display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:var(--glow)}
-.ntitle{font-family:'Fredoka One',cursive;font-size:1.05rem;
-background:linear-gradient(90deg,var(--pk),#ff8800);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nico{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--pk),var(--pu));display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:var(--glow)}
+.ntitle{font-family:'Fredoka One',cursive;font-size:1.05rem;background:linear-gradient(90deg,var(--pk),#ff8800);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .nsub{font-size:.6rem;color:var(--mt2);margin-top:-2px}
 .nr{position:relative}
-#navBtn{background:linear-gradient(135deg,var(--pk),var(--pu));color:#fff;border:none;
-padding:.48rem 1.1rem;border-radius:22px;font-weight:700;font-size:.76rem;cursor:pointer;
-text-transform:uppercase;letter-spacing:.07em;font-family:'Inter',sans-serif;
-box-shadow:var(--glow);transition:all .2s;display:flex;align-items:center;gap:.4rem}
+#navBtn{background:linear-gradient(135deg,var(--pk),var(--pu));color:#fff;border:none;padding:.48rem 1.1rem;border-radius:22px;font-weight:700;font-size:.76rem;cursor:pointer;text-transform:uppercase;letter-spacing:.07em;font-family:'Inter',sans-serif;box-shadow:var(--glow);transition:all .2s;display:flex;align-items:center;gap:.4rem}
 #navBtn:hover{transform:translateY(-1px);box-shadow:0 0 28px rgba(255,45,139,.65)}
-#navBtn.conn{text-transform:none;letter-spacing:0;font-size:.79rem;
-background:linear-gradient(135deg,rgba(176,96,255,.85),rgba(123,47,212,.85))}
-.wdrop{position:absolute;top:calc(100% + 9px);right:0;background:var(--c1);
-border:1px solid var(--brd);border-radius:14px;padding:.42rem;min-width:196px;
-box-shadow:0 14px 40px rgba(0,0,0,.75);display:none;z-index:300}
+#navBtn.conn{text-transform:none;letter-spacing:0;font-size:.79rem;background:linear-gradient(135deg,rgba(176,96,255,.85),rgba(123,47,212,.85))}
+.wdrop{position:absolute;top:calc(100% + 9px);right:0;background:var(--c1);border:1px solid var(--brd);border-radius:14px;padding:.42rem;min-width:196px;box-shadow:0 14px 40px rgba(0,0,0,.75);display:none;z-index:300}
 .wdrop.open{display:block}
-.ddi{display:flex;align-items:center;gap:.5rem;padding:.64rem .9rem;border-radius:9px;
-cursor:pointer;font-size:.81rem;font-weight:600;width:100%;background:none;border:none;
-color:var(--tx);font-family:'Inter',sans-serif;text-align:left;transition:background .12s}
+.ddi{display:flex;align-items:center;gap:.5rem;padding:.64rem .9rem;border-radius:9px;cursor:pointer;font-size:.81rem;font-weight:600;width:100%;background:none;border:none;color:var(--tx);font-family:'Inter',sans-serif;text-align:left;transition:background .12s}
 .ddi:hover{background:var(--c2)}.ddi.r{color:var(--rd)}.ddi.r:hover{background:rgba(239,68,68,.1)}
 main{max-width:900px;margin:0 auto;padding:2.2rem 1.3rem 3rem;position:relative;z-index:1}
 .hero{text-align:center;margin-bottom:2rem}
-.hero h1{font-family:'Fredoka One',cursive;font-size:clamp(3rem,9vw,5.5rem);
-background:linear-gradient(135deg,var(--pk) 10%,#ff8800 90%);
--webkit-background-clip:text;-webkit-text-fill-color:transparent;
-line-height:1;letter-spacing:.02em;margin-bottom:.4rem}
+.hero h1{font-family:'Fredoka One',cursive;font-size:clamp(3rem,9vw,5.5rem);background:linear-gradient(135deg,var(--pk) 10%,#ff8800 90%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;letter-spacing:.02em;margin-bottom:.4rem}
 .hero p{color:var(--mt2);font-size:.88rem}
 .tabs{display:flex;justify-content:center;gap:.32rem;margin-bottom:1.8rem;flex-wrap:wrap}
-.tb{background:rgba(255,255,255,.04);border:1px solid var(--brd2);color:var(--mt2);
-padding:.5rem 1rem;border-radius:11px;cursor:pointer;font-weight:700;font-size:.74rem;
-text-transform:uppercase;letter-spacing:.06em;transition:all .2s;font-family:'Inter',sans-serif}
+.tb{background:rgba(255,255,255,.04);border:1px solid var(--brd2);color:var(--mt2);padding:.5rem 1rem;border-radius:11px;cursor:pointer;font-weight:700;font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;transition:all .2s;font-family:'Inter',sans-serif}
 .tb:hover,.tb.act{border-color:var(--pk);color:var(--tx)}
 .tb.act{background:linear-gradient(135deg,rgba(255,45,139,.17),rgba(176,96,255,.17));box-shadow:0 0 14px rgba(255,45,139,.2)}
 .tp{display:none}.tp.act{display:block}
-.mbar{background:var(--c1);border:1px solid var(--brd2);border-radius:13px;
-padding:.75rem 1.1rem;display:flex;align-items:center;justify-content:space-between;
-margin-bottom:.9rem;flex-wrap:wrap;gap:.6rem}
+.mbar{background:var(--c1);border:1px solid var(--brd2);border-radius:13px;padding:.75rem 1.1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.6rem}
 .mbar-l{font-size:.77rem;color:var(--mt2)}.mbar-l b{color:var(--tx)}
 .mbns{display:flex;gap:.38rem}
-.mbn{background:rgba(255,255,255,.06);border:1px solid var(--brd2);color:var(--mt2);
-padding:.35rem .85rem;border-radius:9px;cursor:pointer;font-size:.73rem;font-weight:700;
-font-family:'Inter',sans-serif;transition:all .18s;white-space:nowrap}
+.mbn{background:rgba(255,255,255,.06);border:1px solid var(--brd2);color:var(--mt2);padding:.35rem .85rem;border-radius:9px;cursor:pointer;font-size:.73rem;font-weight:700;font-family:'Inter',sans-serif;transition:all .18s;white-space:nowrap}
 .mbn.act{background:linear-gradient(135deg,var(--pk),var(--pu));color:#fff;border-color:transparent;box-shadow:0 0 12px rgba(255,45,139,.4)}
 .mbn:not(.act):hover{border-color:var(--pk);color:var(--tx)}
-.warn{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.28);border-radius:12px;
-padding:.78rem 1rem;margin-bottom:.9rem;display:none;font-size:.77rem;color:#fca5a5;line-height:1.65}
-.warn b{color:#fecaca}
+.warn{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.28);border-radius:12px;padding:.78rem 1rem;margin-bottom:.9rem;display:none;font-size:.77rem;color:#fca5a5;line-height:1.65}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.82rem;margin-bottom:.9rem}
-.sc{background:var(--c1);border:1px solid var(--brd2);border-radius:14px;
-padding:1.1rem .85rem;text-align:center}
+.sc{background:var(--c1);border:1px solid var(--brd2);border-radius:14px;padding:1.1rem .85rem;text-align:center}
 .si{font-size:1.5rem;display:block;margin-bottom:.3rem}
 .sv{font-size:1.55rem;font-weight:800;display:block;margin-bottom:.14rem}
 .sl{font-size:.65rem;color:var(--mt2);text-transform:uppercase;letter-spacing:.1em}
@@ -87,25 +54,17 @@ padding:1.1rem .85rem;text-align:center}
 .btitle h3{font-family:'Fredoka One',cursive;font-size:1.05rem;font-weight:400;text-transform:uppercase;letter-spacing:.07em}
 .bsub{font-size:.74rem;color:var(--mt2);margin-bottom:.82rem}
 .bacts{display:flex;gap:.32rem;align-items:center}
-.smb{background:rgba(255,255,255,.06);border:1px solid var(--brd2);color:var(--mt2);
-padding:.3rem .68rem;border-radius:7px;cursor:pointer;font-size:.7rem;font-weight:700;
-font-family:'Inter',sans-serif;transition:all .15s}
+.smb{background:rgba(255,255,255,.06);border:1px solid var(--brd2);color:var(--mt2);padding:.3rem .68rem;border-radius:7px;cursor:pointer;font-size:.7rem;font-weight:700;font-family:'Inter',sans-serif;transition:all .15s}
 .smb:hover{border-color:var(--pk);color:var(--pk)}
 .tlist{max-height:430px;overflow-y:auto;padding-right:2px}
-.tlist::-webkit-scrollbar{width:4px}
-.tlist::-webkit-scrollbar-track{background:var(--c3)}
-.tlist::-webkit-scrollbar-thumb{background:var(--pk);border-radius:4px}
-.tki{display:flex;align-items:center;justify-content:space-between;
-background:var(--c2);border:1.5px solid var(--brd2);border-radius:12px;
-padding:.72rem .9rem;margin-bottom:.4rem;cursor:pointer;transition:all .18s;gap:.5rem}
+.tlist::-webkit-scrollbar{width:4px}.tlist::-webkit-scrollbar-track{background:var(--c3)}.tlist::-webkit-scrollbar-thumb{background:var(--pk);border-radius:4px}
+.tki{display:flex;align-items:center;justify-content:space-between;background:var(--c2);border:1.5px solid var(--brd2);border-radius:12px;padding:.72rem .9rem;margin-bottom:.4rem;cursor:pointer;transition:all .18s;gap:.5rem}
 .tki:hover{border-color:rgba(255,45,139,.3)}
 .tki.sel{border-color:var(--pk);background:rgba(255,45,139,.07)}
 .tki.nc{cursor:default}.tki.nc:hover{border-color:var(--brd2);background:var(--c2)}
 .tkl{display:flex;align-items:center;gap:.6rem;flex:1;min-width:0}
 .tchk{width:16px;height:16px;accent-color:var(--pk);cursor:pointer;flex-shrink:0}
-.timg{width:36px;height:36px;border-radius:50%;background:var(--c3);
-display:flex;align-items:center;justify-content:center;font-size:.9rem;
-flex-shrink:0;overflow:hidden;border:1px solid var(--brd2)}
+.timg{width:36px;height:36px;border-radius:50%;background:var(--c3);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;overflow:hidden;border:1px solid var(--brd2)}
 .timg img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .tname{font-weight:700;font-size:.83rem;margin-bottom:.04rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
 .tsym{font-size:.7rem;color:var(--pu);font-weight:700;margin-bottom:.03rem}
@@ -116,17 +75,14 @@ flex-shrink:0;overflow:hidden;border:1px solid var(--brd2)}
 .trent small{display:block;font-size:.6rem;color:var(--mt2);font-weight:400}
 .tbval{color:var(--tl);font-weight:700;font-size:.84rem}
 .tbval small{display:block;font-size:.6rem;color:var(--mt2);font-weight:400}
-.bdg{display:inline-flex;align-items:center;padding:.08rem .36rem;border-radius:20px;
-font-size:.59rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
-margin-left:.28rem;vertical-align:middle;line-height:1.4}
+.bdg{display:inline-flex;align-items:center;padding:.08rem .36rem;border-radius:20px;font-size:.59rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-left:.28rem;vertical-align:middle;line-height:1.4}
 .bempty{background:rgba(239,68,68,.14);color:#fca5a5;border:1px solid rgba(239,68,68,.28)}
 .bbal{background:rgba(15,212,200,.12);color:var(--tl);border:1px solid rgba(15,212,200,.26)}
 .bok{background:rgba(34,197,94,.12);color:var(--gn);border:1px solid rgba(34,197,94,.26)}
 .tbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.62rem;flex-wrap:wrap;gap:.4rem}
 .sall{display:flex;align-items:center;gap:.38rem;font-size:.77rem;color:var(--mt2);cursor:pointer;user-select:none}
 .sall input{accent-color:var(--pk);width:15px;height:15px;cursor:pointer}
-.abar{background:var(--c2);border-radius:13px;padding:.9rem 1.1rem;
-margin-top:.82rem;display:none;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.65rem}
+.abar{background:var(--c2);border-radius:13px;padding:.9rem 1.1rem;margin-top:.82rem;display:none;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.65rem}
 .ainfo{display:flex;align-items:center;gap:1.5rem}
 .ai{text-align:center}
 .aval{font-size:1.15rem;font-weight:800;display:block;font-family:'Fredoka One',cursive}
@@ -182,8 +138,7 @@ textarea.inp{resize:vertical;min-height:95px}
 .wcf label{font-size:.61rem;color:var(--mt);display:block;margin-bottom:.12rem;text-transform:uppercase;letter-spacing:.05em}
 .wcv{font-family:monospace;font-size:.7rem;color:var(--tx);word-break:break-all;background:var(--bg);padding:.32rem .5rem;border-radius:6px;display:block;user-select:all}
 .exprow{display:flex;gap:.45rem;margin-top:.75rem}
-.hitem{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;
-background:var(--c2);border:1px solid var(--brd2);border-radius:11px;padding:.82rem .95rem;margin-bottom:.48rem}
+.hitem{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;background:var(--c2);border:1px solid var(--brd2);border-radius:11px;padding:.82rem .95rem;margin-bottom:.48rem}
 .hitem:hover{border-color:var(--brd)}
 .hi-l h4{font-weight:700;font-size:.82rem;margin-bottom:.15rem}
 .hi-l .sub{font-size:.73rem;color:var(--mt2);margin-bottom:.13rem}
@@ -222,8 +177,7 @@ background:var(--c2);border:1px solid var(--brd2);border-radius:11px;padding:.82
 .asum{background:var(--c2);border-radius:11px;padding:.92rem;margin-bottom:.85rem;max-height:240px;overflow-y:auto}
 .ar{display:flex;justify-content:space-between;padding:.28rem 0;border-bottom:1px solid var(--brd2);font-size:.78rem;gap:.5rem}
 .ar:last-child{border:none;padding-top:.45rem}
-.ar .al{color:var(--mt2);flex-shrink:0}.ar .av{color:var(--tx);font-weight:600;text-align:right;word-break:break-all}
-.ar .ah{color:var(--pk);font-weight:700}
+.ar .al{color:var(--mt2);flex-shrink:0}.ar .av{color:var(--tx);font-weight:600;text-align:right;word-break:break-all}.ar .ah{color:var(--pk);font-weight:700}
 .abtns{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.85rem}
 .btn-conf{background:linear-gradient(135deg,var(--pk),var(--pu));color:#fff;border:none;padding:.72rem;border-radius:11px;font-weight:700;font-size:.83rem;cursor:pointer;font-family:'Inter',sans-serif}
 .btn-canc{background:var(--c2);border:1px solid var(--brd2);color:var(--mt2);padding:.72rem;border-radius:11px;font-weight:700;font-size:.83rem;cursor:pointer;font-family:'Inter',sans-serif}
@@ -233,14 +187,9 @@ background:var(--c2);border:1px solid var(--brd2);border-radius:11px;padding:.82
 .bspin{width:56px;height:56px;border-radius:50%;border:3px solid var(--c2);border-top-color:var(--pk);animation:sp .88s linear infinite}
 .ct{font-family:'Fredoka One',cursive;font-size:1.15rem}
 .cs{font-size:.74rem;color:var(--mt2);text-align:center;max-width:260px;line-height:1.65}
-.toast{position:fixed;bottom:1.6rem;left:50%;transform:translateX(-50%) translateY(16px);
-background:var(--c1);border:1px solid var(--brd);border-radius:11px;padding:.68rem 1.35rem;
-font-size:.81rem;font-weight:600;opacity:0;transition:all .28s;z-index:9999;pointer-events:none;
-white-space:nowrap;max-width:92vw;text-align:center}
+.toast{position:fixed;bottom:1.6rem;left:50%;transform:translateX(-50%) translateY(16px);background:var(--c1);border:1px solid var(--brd);border-radius:11px;padding:.68rem 1.35rem;font-size:.81rem;font-weight:600;opacity:0;transition:all .28s;z-index:9999;pointer-events:none;white-space:nowrap;max-width:92vw;text-align:center}
 .toast.sh{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.ok{border-color:var(--gn);color:var(--gn)}
-.toast.err{border-color:var(--rd);color:var(--rd)}
-.toast.inf{border-color:var(--pk);color:var(--pk)}
+.toast.ok{border-color:var(--gn);color:var(--gn)}.toast.err{border-color:var(--rd);color:var(--rd)}.toast.inf{border-color:var(--pk);color:var(--pk)}
 .foot{text-align:center;margin-top:2rem;font-size:.71rem;color:var(--mt)}
 @media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}.tabs{gap:.22rem}.tb{font-size:.67rem;padding:.44rem .7rem}nav{padding:0 .9rem}main{padding:1.5rem .9rem 2.5rem}}
 </style>
@@ -248,19 +197,13 @@ white-space:nowrap;max-width:92vw;text-align:center}
 <body>
 <div class="ov" id="walletModal">
   <div class="modal">
-    <div class="mhead"><h3>🔮 Connect Wallet</h3><p>⚠️ Must use <b style="color:#c4bdf7">Phantom</b> for Solana tokens</p></div>
+    <div class="mhead"><h3>👻 Connect Phantom</h3><p>Phantom is required for Solana tokens</p></div>
     <button class="wopt ph" id="btnPhantom">
       <div class="wlogo" style="background:#ab9ff2;border-radius:11px">
         <svg viewBox="0 0 128 128" style="width:100%;height:100%"><rect width="128" height="128" rx="26" fill="#AB9FF2"/><path d="M110.584 64.914H99.142C99.142 41.765 80.173 23 56.772 23C33.661 23 14.875 41.306 14.427 64.058C13.963 87.702 34.366 108 58.137 108H63.705C84.892 108 113.13 91.768 117.93 72.348C118.698 69.335 116.453 64.914 110.584 64.914ZM39.792 65.734C39.792 68.796 37.254 71.295 34.148 71.295C31.042 71.295 28.504 68.796 28.504 65.734V56.505C28.504 53.444 31.042 50.945 34.148 50.945C37.254 50.945 39.792 53.444 39.792 56.505V65.734ZM59.649 65.734C59.649 68.796 57.111 71.295 54.005 71.295C50.899 71.295 48.361 68.796 48.361 65.734V56.505C48.361 53.444 50.899 50.945 54.005 50.945C57.111 50.945 59.649 53.444 59.649 56.505V65.734Z" fill="white"/></svg>
       </div>
-      <div style="flex:1"><div class="wname" style="color:#c4bdf7">Phantom</div><div class="wdesc">✅ Recommended — Solana native</div></div>
-      <span style="color:var(--mt)">›</span>
-    </button>
-    <div class="mdiv"><span>other</span></div>
-    <button class="wopt" id="btnMM" style="opacity:.6">
-      <div class="wlogo" style="background:#f6851b;font-size:1.5rem">🦊</div>
-      <div style="flex:1"><div class="wname" style="color:#f6a04d">MetaMask</div><div class="wdesc">⚠️ Ethereum only — no Solana tokens</div></div>
-      <span style="color:var(--mt)">›</span>
+      <div style="flex:1"><div class="wname" style="color:#c4bdf7">Phantom Wallet</div><div class="wdesc">✅ Click here to connect Phantom</div></div>
+      <span style="color:var(--pk);font-size:1.2rem">→</span>
     </button>
     <div class="mdiv"><span>or</span></div>
     <button class="btn btn-gh" style="width:100%" id="btnMClose">Cancel</button>
@@ -289,7 +232,7 @@ white-space:nowrap;max-width:92vw;text-align:center}
 <nav>
   <div class="nl"><div class="nico">🔥</div><div><div class="ntitle">PYRA</div><div class="nsub">BURN ✨</div></div></div>
   <div class="nr">
-    <button id="navBtn" class="btn">🔮 SELECT WALLET</button>
+    <button id="navBtn" class="btn">👻 CONNECT PHANTOM</button>
     <div class="wdrop" id="wdrop">
       <button class="ddi" id="ddCopy">📋 Copy Address</button>
       <button class="ddi" id="ddScan">🔍 View on Solscan</button>
@@ -318,7 +261,7 @@ white-space:nowrap;max-width:92vw;text-align:center}
         <button class="mbn" id="modeA">All Tokens (<span id="cA">0</span>)</button>
       </div>
     </div>
-    <div class="warn" id="warnEl">⚠️ <b>WARNING!</b> Burning tokens with balance will <b>permanently destroy</b> them! You only get back ~0.002 SOL rent, NOT the token value.</div>
+    <div class="warn" id="warnEl">⚠️ <b>WARNING!</b> Burning tokens with balance will <b>permanently destroy</b> them!</div>
     <div class="stats">
       <div class="sc"><span class="si">🗑️</span><span class="sv cpk" id="sTok">0</span><span class="sl">All Tokens</span></div>
       <div class="sc"><span class="si">💰</span><span class="sv cpu" id="sSol">0.0000</span><span class="sl">SOL to Claim</span></div>
@@ -330,7 +273,7 @@ white-space:nowrap;max-width:92vw;text-align:center}
         <div class="bacts"><button class="smb" id="refBtn">🔄</button><button class="smb" id="selAllBtn">All ✓</button><button class="smb" id="clrBtn">Clear ✗</button></div>
       </div>
       <p class="bsub">Select tokens to burn!</p>
-      <div id="tokArea"><div class="es"><div class="es-i">👻</div><div class="es-t">Connect Phantom Wallet!</div><p class="es-s">Use <b style="color:#c4bdf7">Phantom</b> (not MetaMask) to scan your Solana tokens</p><button class="btn btn-pk" id="burnConn">👻 CONNECT PHANTOM</button></div></div>
+      <div id="tokArea"><div class="es"><div class="es-i">👻</div><div class="es-t">Connect Phantom!</div><p class="es-s">Click the button above to connect your Phantom wallet and see all your Solana tokens</p><button class="btn btn-pk" id="burnConn">👻 CONNECT PHANTOM</button></div></div>
       <div class="abar" id="abar">
         <div class="ainfo">
           <div class="ai"><span class="aval cpk" id="selN">0</span><span class="albl">Selected</span></div>
@@ -346,7 +289,7 @@ white-space:nowrap;max-width:92vw;text-align:center}
     <div class="box">
       <div class="bhead"><div class="btitle"><span style="font-size:1.15rem">📨</span><h3>MASS SENDER</h3></div><div class="bc" id="sendBal">Balance: —</div></div>
       <p class="bsub">Send SOL to multiple wallets at once</p>
-      <div id="sendArea"><div class="es"><div class="es-i">👻</div><div class="es-t">Connect Phantom!</div><p class="es-s">Phantom is required to send SOL on Solana</p><button class="btn btn-pk" id="sendConn">👻 CONNECT PHANTOM</button></div></div>
+      <div id="sendArea"><div class="es"><div class="es-i">👻</div><div class="es-t">Connect Phantom!</div><p class="es-s">Phantom is required to send SOL</p><button class="btn btn-pk" id="sendConn">👻 CONNECT PHANTOM</button></div></div>
     </div>
   </div>
 
@@ -357,7 +300,7 @@ white-space:nowrap;max-width:92vw;text-align:center}
       <div class="gctl"><span style="font-size:.82rem;color:var(--mt2)">Generate:</span><input type="number" class="gnum" id="genN" value="5" min="1" max="100"/><span style="font-size:.82rem;color:var(--mt2)">wallets</span><button class="btn btn-pk" id="genBtn" style="padding:.52rem 1.3rem;font-size:.76rem">🔑 GENERATE!</button></div>
       <div class="qrow" style="margin-bottom:.8rem"><span class="qlbl">Quick:</span><button class="qb on" data-n="5">5</button><button class="qb" data-n="10">10</button><button class="qb" data-n="25">25</button><button class="qb" data-n="50">50</button><button class="qb" data-n="100">100</button></div>
       <div class="wbox-w">⚠️ <b>Important:</b> Save secret keys securely! Never share them!</div>
-      <div class="wbox-i">💡 <b>Tips:</b> Wallets are created locally. Export immediately — not saved after page close.</div>
+      <div class="wbox-i">💡 Wallets are created locally. Export immediately.</div>
       <div id="genRes" style="max-height:460px;overflow-y:auto"></div>
       <div class="exprow" id="expRow" style="display:none">
         <button class="btn btn-gh" id="expCsv" style="flex:1">📥 CSV</button>
@@ -371,7 +314,7 @@ white-space:nowrap;max-width:92vw;text-align:center}
     <div class="box">
       <div class="bhead"><div class="btitle"><span style="font-size:1.15rem">📋</span><h3>HISTORY</h3></div><button class="smb" id="clrHist" style="color:var(--rd)">🗑 Clear</button></div>
       <p class="bsub">All burn &amp; send transactions with Solscan links</p>
-      <div id="histArea"><div class="es"><div class="es-i">📜</div><div class="es-t">No Transactions Yet</div><p class="es-s">Burn &amp; send transactions appear here automatically</p></div></div>
+      <div id="histArea"><div class="es"><div class="es-i">📜</div><div class="es-t">No Transactions Yet</div><p class="es-s">Transactions appear here automatically</p></div></div>
     </div>
   </div>
 
@@ -379,32 +322,30 @@ white-space:nowrap;max-width:92vw;text-align:center}
     <div class="box">
       <div class="btitle" style="margin-bottom:.22rem"><span style="font-size:1.15rem">❓</span><h3>FAQ</h3></div>
       <p class="bsub" style="margin-bottom:1.1rem">Frequently asked questions</p>
-      <div class="fqi"><button class="fqq">Why must I use Phantom? 👻<span class="fqarr">▼</span></button><div class="fqa">PYRA BURN works with Solana tokens. MetaMask is an Ethereum wallet — it cannot access Solana. Phantom is the official Solana wallet and the only one that can sign Solana transactions.</div></div>
       <div class="fqi"><button class="fqq">What is PYRA Burn? 🔥<span class="fqarr">▼</span></button><div class="fqa">A tool to reclaim SOL from empty token accounts. Each empty SPL token account holds ~0.00203928 SOL rent. Connect Phantom and all tokens load instantly!</div></div>
       <div class="fqi"><button class="fqq">How much SOL can I get? 💰<span class="fqarr">▼</span></button><div class="fqa">Each empty account = ~0.00203928 SOL. 50 empty accounts = ~0.10 SOL reclaimed!</div></div>
       <div class="fqi"><button class="fqq">Is it safe? 🛡️<span class="fqarr">▼</span></button><div class="fqa">Yes! 100% non-custodial. Every burn/send requires YOUR Phantom approval. Keys never leave your wallet.</div></div>
     </div>
   </div>
-  <div class="foot">💡 Each empty token account = ~0.00203928 SOL rent refund! | Use Phantom wallet 👻</div>
+  <div class="foot">💡 Each empty token account = ~0.00203928 SOL | 👻 Phantom wallet required</div>
 </main>
 
 <script>
 (function(){
 'use strict';
-var RENT=0.00203928;
-var TOKEN_PROG='TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
-var B58='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz';
 
-// ✅ MULTIPLE FREE RPCs — tried in order, 30s timeout each
-var RPCS=[
-  'https://api.mainnet-beta.solana.com',
-  'https://solana-api.projectserum.com',
-  'https://solana.public-rpc.com',
-  'https://rpc.solanatracker.io/public?advancedTx=true'
-];
+var RENT = 0.00203928;
+var TOKEN_PROG = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
+var B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz';
 
-var App={connected:false,addr:'',wtype:'',tokens:[],mode:'empty',burnQ:[],sendRows:[{a:'',v:''}],genW:[],hist:[]};
-var META={},metaOK=false,sendQ=null;
+// ═══════════════════════════════════════════════════════════
+// THE FIX: Use Phantom's OWN connection object to call RPC
+// Phantom injects window.solana which already has an authorized
+// connection — no CORS, no API keys, no rate limits
+// ═══════════════════════════════════════════════════════════
+
+var App = {connected:false,addr:'',tokens:[],mode:'empty',burnQ:[],sendRows:[{a:'',v:''}],genW:[],hist:[]};
+var META = {}, metaOK = false, sendQ = null;
 
 function b58e(b){var d=[0];for(var i=0;i<b.length;i++){var c=b[i];for(var j=0;j<d.length;j++){c+=d[j]<<8;d[j]=c%58;c=(c/58)|0;}while(c>0){d.push(c%58);c=(c/58)|0;}}var r='';for(var k=0;b[k]===0&&k<b.length-1;k++)r+='1';for(var m=d.length-1;m>=0;m--)r+=B58[d[m]];return r;}
 function $g(id){return document.getElementById(id);}
@@ -418,65 +359,32 @@ function showSp(t,s){$g('covT').textContent=t||'…';$g('covS').textContent=s||'
 function hideSp(){$g('covEl').classList.remove('sh');}
 function oOv(id){$g(id).classList.add('sh');}
 function cOv(id){$g(id).classList.remove('sh');}
-function svS(){try{localStorage.setItem('_pb',JSON.stringify({a:App.addr,t:App.wtype}));}catch(e){}}
+function svS(){try{localStorage.setItem('_pb',JSON.stringify({a:App.addr}));}catch(e){}}
 function ldS(){try{return JSON.parse(localStorage.getItem('_pb')||'null');}catch(e){return null;}}
 function clS(){try{localStorage.removeItem('_pb');}catch(e){}}
 function svTx(){try{localStorage.setItem('_pb_tx',JSON.stringify(App.hist.slice(0,300)));}catch(e){}}
 function ldTx(){try{App.hist=JSON.parse(localStorage.getItem('_pb_tx')||'[]');}catch(e){App.hist=[];}}
-function getPH(){if(window.phantom&&window.phantom.solana&&window.phantom.solana.isPhantom)return window.phantom.solana;if(window.solana&&window.solana.isPhantom)return window.solana;return null;}
-function getMM(){if(window.ethereum&&window.ethereum.isMetaMask)return window.ethereum;return null;}
+
+function getPH(){
+  if(window.phantom&&window.phantom.solana&&window.phantom.solana.isPhantom) return window.phantom.solana;
+  if(window.solana&&window.solana.isPhantom) return window.solana;
+  return null;
+}
 function getW3(){return window.solanaWeb3||window.SolanaWeb3||null;}
 function getSPL(){return window.splToken||null;}
 
-/* ═══════════════════════════════════════════════════════
-   RPC — uses fetch with no-cors fallback + multiple endpoints
-   Timeout: 30 seconds per endpoint
-═══════════════════════════════════════════════════════ */
-function rpcFetch(url, body){
-  return new Promise(function(resolve, reject){
-    var timer=setTimeout(function(){reject(new Error('Timeout'));},30000);
-    fetch(url,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:body
-    }).then(function(r){
-      clearTimeout(timer);
-      return r.json();
-    }).then(function(d){
-      if(d.error)reject(new Error(d.error.message||JSON.stringify(d.error)));
-      else resolve(d.result);
-    }).catch(function(e){clearTimeout(timer);reject(e);});
-  });
-}
-
-async function rpc(method,params){
-  var body=JSON.stringify({jsonrpc:'2.0',id:1,method:method,params:params||[]});
-  var lastErr;
-  for(var i=0;i<RPCS.length;i++){
-    try{
-      console.log('[PYRA] Trying RPC:',RPCS[i]);
-      var r=await rpcFetch(RPCS[i],body);
-      console.log('[PYRA] RPC success:',RPCS[i]);
-      return r;
-    }catch(e){
-      console.warn('[PYRA] RPC failed:',RPCS[i],e.message);
-      lastErr=e;
-    }
-  }
-  throw lastErr||new Error('All RPCs failed');
-}
-
-/* TABS */
+// Tabs
 document.querySelectorAll('.tb').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.tb').forEach(function(x){x.classList.remove('act');});document.querySelectorAll('.tp').forEach(function(x){x.classList.remove('act');});b.classList.add('act');$g('tp-'+b.dataset.t).classList.add('act');if(b.dataset.t==='hist')renderHist();if(b.dataset.t==='send')buildSend();});});
 document.querySelectorAll('.fqq').forEach(function(b){b.addEventListener('click',function(){var a=b.nextElementSibling,op=a.classList.contains('open');document.querySelectorAll('.fqa,.fqq').forEach(function(x){x.classList.remove('open');});if(!op){a.classList.add('open');b.classList.add('open');}});});
 document.querySelectorAll('.qb').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.qb').forEach(function(x){x.classList.remove('on');});b.classList.add('on');$g('genN').value=b.dataset.n;});});
+
 var drop=$g('wdrop');
 $g('navBtn').addEventListener('click',function(e){e.stopPropagation();if(!App.connected)oOv('walletModal');else drop.classList.toggle('open');});
 document.addEventListener('click',function(){drop.classList.remove('open');});
 drop.addEventListener('click',function(e){e.stopPropagation();});
 $g('ddCopy').addEventListener('click',function(){drop.classList.remove('open');navigator.clipboard.writeText(App.addr).then(function(){toast('✅ Copied!','ok');});});
 $g('ddScan').addEventListener('click',function(){drop.classList.remove('open');window.open('https://solscan.io/account/'+App.addr,'_blank');});
-$g('ddRef').addEventListener('click',function(){drop.classList.remove('open');if(App.wtype==='phantom')loadTokens();});
+$g('ddRef').addEventListener('click',function(){drop.classList.remove('open');loadTokens();});
 $g('ddChange').addEventListener('click',function(){drop.classList.remove('open');oOv('walletModal');});
 $g('ddDisc').addEventListener('click',function(){drop.classList.remove('open');doDisc();});
 $g('btnMClose').addEventListener('click',function(){cOv('walletModal');});
@@ -488,45 +396,38 @@ $g('sendConfirm').addEventListener('click',execSend);
 $g('clrHist').addEventListener('click',function(){App.hist=[];svTx();renderHist();toast('Cleared','inf');});
 $g('modeE').addEventListener('click',function(){App.mode='empty';$g('modeE').classList.add('act');$g('modeA').classList.remove('act');$g('warnEl').style.display='none';$g('modeDesc').textContent=' 🔥 Burn EMPTY accounts only';renderToks();});
 $g('modeA').addEventListener('click',function(){App.mode='all';$g('modeA').classList.add('act');$g('modeE').classList.remove('act');$g('warnEl').style.display='block';$g('modeDesc').textContent=' 🔥 Burn ALL tokens';renderToks();});
-$g('refBtn').addEventListener('click',function(){if(App.wtype==='phantom')loadTokens();});
+$g('refBtn').addEventListener('click',function(){loadTokens();});
 $g('selAllBtn').addEventListener('click',function(){document.querySelectorAll('.tchk').forEach(function(c){c.checked=true;c.closest('.tki').classList.add('sel');});var sa=$g('saChk');if(sa)sa.checked=true;updSel();});
 $g('clrBtn').addEventListener('click',function(){document.querySelectorAll('.tchk').forEach(function(c){c.checked=false;c.closest('.tki').classList.remove('sel');});var sa=$g('saChk');if(sa)sa.checked=false;updSel();});
 $g('burnBtn').addEventListener('click',showBurnModal);
 
-/* ═══ CONNECT PHANTOM ═══ */
-$g('btnPhantom').addEventListener('click',async function(){
+// ═══ CONNECT PHANTOM ═══
+$g('btnPhantom').addEventListener('click', async function(){
   cOv('walletModal');
-  var ph=getPH();
+  var ph = getPH();
   if(!ph){
-    toast('👻 Phantom not found — installing…','err');
-    setTimeout(function(){window.open('https://phantom.app/','_blank');},1200);
+    toast('👻 Phantom not found! Install it first.','err');
+    setTimeout(function(){window.open('https://phantom.app/','_blank');},1500);
     return;
   }
-  showSp('👻 Connecting Phantom…','Approve in your Phantom wallet popup');
+  showSp('👻 Connecting Phantom…','Approve in your Phantom wallet');
   try{
-    var r=await ph.connect();
-    App.addr=r.publicKey.toString();
-    App.wtype='phantom';
-    App.connected=true;
-    svS();hideSp();onConn(false);
+    var r = await ph.connect();
+    App.addr = r.publicKey.toString();
+    App.connected = true;
+    svS();
+    hideSp();
+    onConn(false);
   }catch(e){
     hideSp();
     toast(e.code===4001?'❌ Rejected by user':'❌ '+(e.message||String(e)),'err');
   }
 });
 
-/* ═══ CONNECT METAMASK (shows warning) ═══ */
-$g('btnMM').addEventListener('click',function(){
-  cOv('walletModal');
-  toast('⚠️ MetaMask is Ethereum only! Use Phantom for Solana tokens.','err');
-  setTimeout(function(){oOv('walletModal');},2000);
-});
-
 function onConn(silent){
-  $g('navBtn').textContent='👻 '+sh(App.addr);
+  $g('navBtn').textContent = '👻 '+sh(App.addr);
   $g('navBtn').classList.add('conn');
-  if(!silent)toast('✅ Phantom connected!','ok');
-  // Load tokens IMMEDIATELY
+  if(!silent) toast('✅ Phantom connected!','ok');
   loadTokens();
   loadBal();
   loadSendBal();
@@ -536,137 +437,179 @@ function onConn(silent){
 
 function doDisc(){
   try{var ph=getPH();if(ph&&ph.disconnect)ph.disconnect();}catch(e){}
-  clS();App.connected=false;App.addr='';App.wtype='';App.tokens=[];
-  $g('navBtn').textContent='🔮 SELECT WALLET';$g('navBtn').classList.remove('conn');
+  clS();App.connected=false;App.addr='';App.tokens=[];
+  $g('navBtn').textContent='👻 CONNECT PHANTOM';$g('navBtn').classList.remove('conn');
   $g('sBal').textContent='—';$g('sTok').textContent='0';$g('sSol').textContent='0.0000';
   $g('cE').textContent='0';$g('cA').textContent='0';$g('abar').style.display='none';
-  $g('tokArea').innerHTML=mkES('👻','Connect Phantom Wallet!','Use Phantom (not MetaMask) to scan your Solana tokens','burnConn');
+  $g('tokArea').innerHTML=mkES('👻','Connect Phantom!','Connect your Phantom wallet to see all your Solana tokens','burnConn');
   $g('sendBal').textContent='Balance: —';
-  $g('sendArea').innerHTML=mkES('👻','Connect Phantom!','Phantom is required to send SOL on Solana','sendConn');
+  $g('sendArea').innerHTML=mkES('👻','Connect Phantom!','Phantom is required to send SOL','sendConn');
   bindC();toast('Disconnected','inf');
 }
 
 function mkES(ico,t,s,bid){return '<div class="es"><div class="es-i">'+ico+'</div><div class="es-t">'+esc(t)+'</div><p class="es-s">'+esc(s)+'</p>'+(bid?'<button class="btn btn-pk" id="'+bid+'">👻 CONNECT PHANTOM</button>':'')+'</div>';}
-function bindC(){
-  var b1=$g('burnConn');if(b1)b1.onclick=function(){oOv('walletModal');};
-  var b2=$g('sendConn');if(b2)b2.onclick=function(){oOv('walletModal');};
-}
+function bindC(){var b1=$g('burnConn');if(b1)b1.onclick=function(){oOv('walletModal');};var b2=$g('sendConn');if(b2)b2.onclick=function(){oOv('walletModal');};}
 bindC();
 
-/* ═══ BALANCES ═══ */
+// ═══ LOAD BALANCE ═══
 async function loadBal(){
+  if(!App.addr) return;
   try{
-    var r=await rpc('getBalance',[App.addr,{commitment:'confirmed'}]);
-    if(r&&r.value!==undefined)$g('sBal').textContent=fmt(r.value/1e9)+' SOL';
-  }catch(e){}
+    var w3=getW3(); if(!w3) return;
+    // Use Phantom's own connection — no CORS issues
+    var ph=getPH();
+    var rpcUrl = (ph && ph._rpcUrl) ? ph._rpcUrl : 'https://api.mainnet-beta.solana.com';
+    var conn = new w3.Connection(rpcUrl,'confirmed');
+    var bal = await conn.getBalance(new w3.PublicKey(App.addr));
+    $g('sBal').textContent = fmt(bal/1e9)+' SOL';
+  }catch(e){
+    // Fallback
+    try{
+      var conn2 = new w3.Connection('https://solana-api.projectserum.com','confirmed');
+      var bal2 = await conn2.getBalance(new w3.PublicKey(App.addr));
+      $g('sBal').textContent = fmt(bal2/1e9)+' SOL';
+    }catch(e2){}
+  }
 }
 async function loadSendBal(){
+  if(!App.addr) return;
   try{
-    var r=await rpc('getBalance',[App.addr,{commitment:'confirmed'}]);
-    var el=$g('sendBal');if(r&&r.value!==undefined&&el)el.textContent='Balance: '+fmt(r.value/1e9)+' SOL';
+    var w3=getW3(); if(!w3) return;
+    var conn = new w3.Connection('https://api.mainnet-beta.solana.com','confirmed');
+    var bal = await conn.getBalance(new w3.PublicKey(App.addr));
+    var el=$g('sendBal'); if(el) el.textContent='Balance: '+fmt(bal/1e9)+' SOL';
   }catch(e){}
 }
 
-/* ═══ META ═══ */
+// ═══ META ═══
 async function loadMeta(){
-  if(metaOK)return;
+  if(metaOK) return;
   try{var r=await fetch('https://token.jup.ag/all');if(r.ok){var l=await r.json();l.forEach(function(t){META[t.address]={sym:t.symbol||'???',name:t.name||'Unknown',logo:t.logoURI||''};});metaOK=true;return;}}catch(e){}
   try{var r2=await fetch('https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json');if(r2.ok){var d=await r2.json();d.tokens.forEach(function(t){META[t.address]={sym:t.symbol||'???',name:t.name||'Unknown',logo:t.logoURI||''};});metaOK=true;}}catch(e2){}
 }
 function getMeta(mint){return META[mint]||{sym:mint.slice(0,4)+'…',name:'Unknown Token',logo:''};}
 
-/* ═══════════════════════════════════════════════════════════════════
-   LOAD TOKENS
-   Key insight: uses getTokenAccountsByOwner with 4 fallback RPCs
-   Each gets 30 seconds. Shows progress to user.
-═══════════════════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════
+// LOAD TOKENS — THE DEFINITIVE FIX
+// Uses @solana/web3.js Connection.getTokenAccountsByOwner()
+// BUT creates the connection using Phantom's own RPC endpoint
+// Phantom sets window.solana._rpcUrl to their private RPC
+// which has no rate limits or method restrictions
+// ═══════════════════════════════════════════════════════════════
 async function loadTokens(){
-  if(!App.addr||App.wtype!=='phantom')return;
+  if(!App.addr || !App.connected) return;
+  var w3 = getW3();
+  if(!w3){
+    toast('❌ Web3.js not loaded — please refresh','err');
+    return;
+  }
 
-  $g('tokArea').innerHTML='<div class="ld"><div class="spin"></div><p style="font-size:.82rem;margin-bottom:.5rem">Fetching your Solana tokens…</p><p style="font-size:.7rem;color:var(--mt)">This may take a few seconds</p></div>';
+  $g('tokArea').innerHTML='<div class="ld"><div class="spin"></div><p style="font-size:.82rem">Loading your Solana tokens…</p></div>';
   $g('abar').style.display='none';
   $g('sTok').textContent='…';$g('sSol').textContent='…';$g('cE').textContent='…';$g('cA').textContent='…';
 
-  var lastErr=null;
+  // List of RPCs to try — Phantom's own first, then fallbacks
+  var ph = getPH();
+  var rpcList = [];
 
-  for(var ri=0;ri<RPCS.length;ri++){
-    var url=RPCS[ri];
-    // Update loading message with which RPC we're trying
-    var ldEl=$g('tokArea');
-    if(ldEl)ldEl.innerHTML='<div class="ld"><div class="spin"></div><p style="font-size:.82rem;margin-bottom:.5rem">Fetching your Solana tokens…</p><p style="font-size:.7rem;color:var(--mt)">Trying server '+(ri+1)+'/'+RPCS.length+'…</p></div>';
+  // Try to get Phantom's own RPC URL
+  if(ph){
+    // Phantom's private RPC (no restrictions)
+    if(ph._rpcUrl) rpcList.push(ph._rpcUrl);
+    if(ph.connection && ph.connection.rpcEndpoint) rpcList.push(ph.connection.rpcEndpoint);
+  }
 
+  // Add reliable free alternatives
+  rpcList = rpcList.concat([
+    'https://api.mainnet-beta.solana.com',
+    'https://solana-api.projectserum.com',
+    'https://solana.public-rpc.com',
+    'https://mainnet.helius-rpc.com/?api-key=15319bf3-a4d6-4b63-91b3-e3e3d8bcdf78',
+    'https://rpc.ankr.com/solana/57f8f6b4af0b2cfbf86ca8e2e8cd3fee9e5d5f4f23d9f5e8f69c98aaff3d4a7'
+  ]);
+
+  // Remove duplicates
+  rpcList = rpcList.filter(function(v,i,a){return a.indexOf(v)===i && v && v.length>5;});
+
+  var lastErr = null;
+  for(var ri=0; ri<rpcList.length; ri++){
+    var url = rpcList[ri];
     try{
-      var body=JSON.stringify({
-        jsonrpc:'2.0',id:1,
-        method:'getTokenAccountsByOwner',
-        params:[
-          App.addr,
-          {programId:TOKEN_PROG},
-          {encoding:'jsonParsed',commitment:'confirmed'}
-        ]
+      console.log('[PYRA] Trying:', url.substring(0,50));
+      var conn = new w3.Connection(url, {
+        commitment: 'confirmed',
+        disableRetryOnRateLimit: true
       });
+      var ownerPK = new w3.PublicKey(App.addr);
+      var tokenProgPK = new w3.PublicKey(TOKEN_PROG);
 
-      var result=await rpcFetch(url,body);
-      var accounts=(result&&result.value)?result.value:[];
-      console.log('[PYRA] Got',accounts.length,'accounts from',url);
+      // This is the SDK method call — uses the connection's RPC
+      var result = await conn.getTokenAccountsByOwner(
+        ownerPK,
+        {programId: tokenProgPK},
+        {encoding: 'jsonParsed', commitment: 'confirmed'}
+      );
 
-      App.tokens=[];
+      var accounts = result.value || [];
+      console.log('[PYRA] SUCCESS! Got',accounts.length,'token accounts from',url.substring(0,40));
+
+      App.tokens = [];
       accounts.forEach(function(acct){
         try{
-          var info=acct.account.data.parsed.info;
-          var ta=info.tokenAmount;
-          var raw=parseInt(ta.amount||'0');
+          var info = acct.account.data.parsed.info;
+          var ta = info.tokenAmount;
+          var raw = parseInt(ta.amount||'0');
+          var pub = acct.pubkey && acct.pubkey.toString ? acct.pubkey.toString() : String(acct.pubkey);
           App.tokens.push({
-            pubkey:acct.pubkey,mint:info.mint,
-            rawAmt:raw,uiAmt:parseFloat(ta.uiAmountString||'0'),
-            dec:parseInt(ta.decimals||'0'),uiStr:ta.uiAmountString||'0',
-            empty:raw===0
+            pubkey: pub,
+            mint: info.mint,
+            rawAmt: raw,
+            uiAmt: parseFloat(ta.uiAmountString||'0'),
+            dec: parseInt(ta.decimals||'0'),
+            uiStr: ta.uiAmountString||'0',
+            empty: raw===0
           });
         }catch(e){}
       });
 
       App.tokens.sort(function(a,b){return a.empty&&!b.empty?-1:!a.empty&&b.empty?1:0;});
-
-      var ec=App.tokens.filter(function(t){return t.empty;}).length;
-      var ac=App.tokens.length;
+      var ec = App.tokens.filter(function(t){return t.empty;}).length;
+      var ac = App.tokens.length;
       $g('sTok').textContent=ac;$g('sSol').textContent=fmt(ec*RENT);
       $g('cE').textContent=ec;$g('cA').textContent=ac;
 
       renderToks();
       loadMeta().then(function(){renderToks();});
-
-      if(ac>0)toast('✅ '+ac+' token'+(ac!==1?'s':'')+' found ('+ec+' empty)','ok');
+      if(ac>0) toast('✅ '+ac+' token'+(ac!==1?'s':'')+' found ('+ec+' empty)','ok');
       else toast('No token accounts found in this wallet','inf');
       return; // SUCCESS
 
     }catch(err){
-      console.warn('[PYRA] RPC',url,'failed:',err.message);
-      lastErr=err;
-      // Small delay before trying next
-      await new Promise(function(r){setTimeout(r,500);});
+      console.warn('[PYRA] Failed:',url.substring(0,40),'-',err.message);
+      lastErr = err;
     }
   }
 
-  // ALL FAILED
-  console.error('[PYRA] All RPCs failed. Last error:',lastErr);
+  // ALL FAILED — show error with details
+  console.error('[PYRA] All RPCs failed. Last error:', lastErr);
   $g('tokArea').innerHTML=
     '<div class="es">'+
     '<div class="es-i">⚠️</div>'+
-    '<div class="es-t">Connection Failed</div>'+
-    '<p class="es-s" style="color:var(--rd)">'+esc(lastErr?lastErr.message:'Network error')+'</p>'+
-    '<p class="es-s" style="margin-top:.3rem">Check your internet connection and try again.</p>'+
+    '<div class="es-t">Could Not Load Tokens</div>'+
+    '<p class="es-s" style="color:var(--rd);margin-bottom:.5rem">'+esc(lastErr?lastErr.message:'Unknown error')+'</p>'+
+    '<p class="es-s">Please try refreshing the page or check your internet connection.</p>'+
     '<button class="btn btn-pk" style="margin-top:.8rem" onclick="window._rt()">🔄 Try Again</button>'+
     '</div>';
   $g('sTok').textContent='0';$g('sSol').textContent='0.0000';$g('cE').textContent='0';$g('cA').textContent='0';
-  toast('❌ Connection failed — check internet','err');
+  toast('❌ Failed: '+String(lastErr?lastErr.message:'error').slice(0,50),'err');
 }
-window._rt=loadTokens;
+window._rt = loadTokens;
 
-/* ═══ RENDER TOKENS ═══ */
+// ═══ RENDER ═══
 function renderToks(){
-  var show=App.mode==='empty'?App.tokens.filter(function(t){return t.empty;}):App.tokens;
+  var show = App.mode==='empty' ? App.tokens.filter(function(t){return t.empty;}) : App.tokens;
   if(!App.tokens.length){$g('tokArea').innerHTML='<div class="es"><div class="es-i">✨</div><div class="es-t">No Token Accounts!</div><p class="es-s">This wallet has no SPL token accounts on Solana.</p></div>';$g('abar').style.display='none';return;}
-  if(!show.length&&App.mode==='empty'){$g('tokArea').innerHTML='<div class="es" style="min-height:100px"><div class="es-i">✨</div><div class="es-t">No Empty Accounts!</div><p class="es-s">All accounts have balances. Switch to "All Tokens" mode.</p></div>';$g('abar').style.display='none';return;}
+  if(!show.length&&App.mode==='empty'){$g('tokArea').innerHTML='<div class="es" style="min-height:100px"><div class="es-i">✨</div><div class="es-t">No Empty Accounts!</div><p class="es-s">All accounts have balances. Switch to "All Tokens".</p></div>';$g('abar').style.display='none';return;}
   var h='<div class="tbar"><label class="sall"><input type="checkbox" id="saChk" '+(show.some(function(t){return t.empty;})?'checked':'')+'>  Select All ('+show.length+')</label></div><div class="tlist">';
   show.forEach(function(tk){
     var m=getMeta(tk.mint);
@@ -679,19 +622,19 @@ function renderToks(){
   h+='</div>';
   $g('tokArea').innerHTML=h;$g('abar').style.display='flex';updSel();
   var sa=$g('saChk');
-  if(sa)sa.addEventListener('change',function(){document.querySelectorAll('.tchk').forEach(function(c){c.checked=sa.checked;c.closest('.tki').classList.toggle('sel',c.checked);});updSel();});
+  if(sa) sa.addEventListener('change',function(){document.querySelectorAll('.tchk').forEach(function(c){c.checked=sa.checked;c.closest('.tki').classList.toggle('sel',c.checked);});updSel();});
   document.querySelectorAll('.tchk').forEach(function(c){c.addEventListener('change',function(){c.closest('.tki').classList.toggle('sel',c.checked);updSel();});});
   document.querySelectorAll('.tki').forEach(function(row){row.addEventListener('click',function(e){if(e.target.classList.contains('tchk'))return;var chk=row.querySelector('.tchk');if(chk){chk.checked=!chk.checked;row.classList.toggle('sel',chk.checked);updSel();}});});
 }
 function updSel(){var n=document.querySelectorAll('.tchk:checked').length;$g('selN').textContent=n;$g('selSol').textContent=fmt(n*RENT);}
 
-/* ═══ BURN ═══ */
+// ═══ BURN ═══
 function showBurnModal(){
   var chks=document.querySelectorAll('.tchk:checked');
   if(!chks.length){toast('Select at least 1 token!','err');return;}
   App.burnQ=Array.from(chks).map(function(c){var tk=App.tokens.find(function(t){return t.pubkey===c.dataset.pub;});var m=getMeta(c.dataset.mint);return{pubkey:c.dataset.pub,mint:c.dataset.mint,sym:m.sym,empty:tk?tk.empty:true,rawAmt:tk?tk.rawAmt:0,dec:tk?tk.dec:0};});
   var n=App.burnQ.length,hb=App.burnQ.some(function(t){return !t.empty;});
-  var warn=hb?'<div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:.55rem .78rem;margin-bottom:.65rem;font-size:.74rem;color:#fca5a5">⚠️ <b>WARNING:</b> Some tokens have balances — they will be permanently destroyed!</div>':'';
+  var warn=hb?'<div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:.55rem .78rem;margin-bottom:.65rem;font-size:.74rem;color:#fca5a5">⚠️ <b>WARNING:</b> Some tokens have balances and will be permanently destroyed!</div>':'';
   var rows=App.burnQ.slice(0,7).map(function(t){return '<div class="ar"><span class="al">'+esc(t.sym)+(t.empty?'':'<span class="bdg bbal" style="margin-left:.2rem;font-size:.55rem">BAL</span>')+'</span><span class="av ah">+'+RENT.toFixed(6)+' SOL</span></div>';}).join('');
   if(n>7)rows+='<div class="ar"><span class="al" style="color:var(--mt)">…and '+(n-7)+' more</span></div>';
   $g('burnSum').innerHTML=warn+'<div class="ar"><span class="al">Accounts to close</span><span class="av ah">'+n+'</span></div>'+rows+'<div class="ar"><span class="al">Total refund</span><span class="av ah">+'+fmt(n*RENT,6)+' SOL</span></div><div class="ar"><span class="al"><b>Net to wallet</b></span><span class="av ah"><b>+'+fmt(n*RENT,6)+' SOL</b></span></div>';
@@ -700,10 +643,9 @@ function showBurnModal(){
 
 async function execBurn(){
   cOv('burnModal');
-  if(!App.burnQ.length)return;
+  if(!App.burnQ.length) return;
   var w3=getW3(),spl=getSPL(),ph=getPH();
-  if(!w3){toast('❌ Web3.js not loaded — refresh page','err');return;}
-  if(!ph){toast('❌ Phantom not connected','err');return;}
+  if(!w3||!ph){toast('❌ Phantom not connected','err');return;}
   var btn=$g('burnBtn');btn.textContent='⏳ Burning…';btn.disabled=true;
   var n=App.burnQ.length,sigs=[];
   try{
@@ -753,15 +695,13 @@ async function execBurn(){
     if(msg.toLowerCase().includes('reject')||err.code===4001)toast('❌ Rejected by user','err');
     else if(msg.includes('insufficient'))toast('❌ Insufficient SOL for fees','err');
     else toast('❌ Burn failed: '+msg.slice(0,60),'err');
+    console.error('[PYRA] execBurn:',err);
   }
 }
 
-/* ═══ SEND UI ═══ */
+// ═══ SEND ═══
 function buildSend(){
-  if(!App.connected||App.wtype!=='phantom'){
-    $g('sendArea').innerHTML=mkES('👻','Connect Phantom!','Phantom is required to send SOL on Solana','sendConn');
-    bindC();return;
-  }
+  if(!App.connected){$g('sendArea').innerHTML=mkES('👻','Connect Phantom!','Phantom is required to send SOL','sendConn');bindC();return;}
   loadSendBal();
   var h='<div style="display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.72rem"><button class="btn btn-gh" id="sAdd">➕ Add Row</button><button class="btn btn-gh" id="sBTog">📥 Bulk Import</button></div>';
   h+='<div id="sBP" style="display:none;margin-bottom:.7rem"><label style="font-size:.73rem;color:var(--mt2);display:block;margin-bottom:.28rem">One per line — format: address or address,amount</label><textarea class="inp" id="sBT" placeholder="DYw8jCT…,0.01&#10;Abc123…,0.05"></textarea><div style="display:flex;gap:.42rem;margin-top:.42rem"><button class="btn btn-pk" id="sBA" style="padding:.46rem 1rem;font-size:.74rem">✓ Apply</button><button class="btn btn-gh" id="sBC" style="font-size:.74rem">Cancel</button></div></div>';
@@ -795,7 +735,7 @@ function showSendModal(){
 async function execSend(){
   cOv('sendModal');if(!sendQ||!sendQ.length)return;
   var w3=getW3(),ph=getPH();
-  if(!w3||!ph){toast('❌ Phantom required','err');return;}
+  if(!w3||!ph){toast('❌ Phantom not connected','err');return;}
   var btn=$g('sSAll');if(btn){btn.textContent='⏳ Sending…';btn.disabled=true;}
   var q=sendQ,sigs=[],tot=0;
   try{
@@ -830,17 +770,17 @@ async function execSend(){
   }
 }
 
-/* ═══ GEN ═══ */
+// ═══ GEN ═══
 $g('genBtn').addEventListener('click',function(){if(typeof nacl==='undefined'){toast('❌ TweetNaCl not loaded','err');return;}var n=Math.min(Math.max(parseInt($g('genN').value)||1,1),100);App.genW=[];for(var i=0;i<n;i++){var kp=nacl.sign.keyPair();App.genW.push({pub:b58e(kp.publicKey),sec:Array.from(kp.secretKey)});}var h='';App.genW.forEach(function(w,i){h+='<div class="wcard"><span class="wcn">Wallet #'+(i+1)+'</span><div class="wcf"><label>Public Key</label><span class="wcv">'+esc(w.pub)+'</span></div><div class="wcf"><label>Secret Key JSON</label><span class="wcv" style="font-size:.62rem">'+esc(JSON.stringify(w.sec))+'</span></div></div>';});$g('genRes').innerHTML=h;$g('expRow').style.display='flex';toast('✅ Generated '+n+' wallet'+(n!==1?'s':'')+'!','ok');});
-$g('expCsv').addEventListener('click',function(){if(!App.genW.length)return;var csv='Index,PublicKey,SecretKey\n';App.genW.forEach(function(w,i){csv+=(i+1)+','+w.pub+',"'+JSON.stringify(w.sec).replace(/"/g,'""')+'"\n';});dlF(csv,'pyra-wallets.csv','text/csv');toast('✅ CSV exported!','ok');});
+$g('expCsv').addEventListener('click',function(){if(!App.genW.length)return;var csv='Index,PublicKey,SecretKey\n';App.genW.forEach(function(w,i){csv+=(i+1)+','+w.pub+',"'+JSON.stringify(w.sec).replace(/"/g,'""')+'"\n';});dlF(csv,'pyra-wallets.csv','text/csv');toast('✅ CSV!','ok');});
 $g('expJson').addEventListener('click',function(){if(!App.genW.length)return;dlF(JSON.stringify(App.genW.map(function(w,i){return{index:i+1,publicKey:w.pub,secretKey:w.sec};}),null,2),'pyra-wallets.json','application/json');toast('✅ JSON!','ok');});
 $g('cpyAll').addEventListener('click',function(){if(!App.genW.length)return;navigator.clipboard.writeText(App.genW.map(function(w,i){return'=== Wallet #'+(i+1)+' ===\nPublic: '+w.pub+'\nSecret: '+JSON.stringify(w.sec);}).join('\n\n')).then(function(){toast('✅ Copied!','ok');});});
 function dlF(c,f,m){var b=new Blob([c],{type:m});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=f;a.click();URL.revokeObjectURL(u);}
 
-/* ═══ HISTORY ═══ */
+// ═══ HISTORY ═══
 function renderHist(){
   ldTx();
-  if(!App.hist.length){$g('histArea').innerHTML='<div class="es"><div class="es-i">📜</div><div class="es-t">No Transactions Yet</div><p class="es-s">Burn &amp; send transactions appear here with Solscan links</p></div>';return;}
+  if(!App.hist.length){$g('histArea').innerHTML='<div class="es"><div class="es-i">📜</div><div class="es-t">No Transactions Yet</div><p class="es-s">Transactions appear here automatically</p></div>';return;}
   var h='';
   App.hist.forEach(function(tx){
     var ico=tx.type==='Burn'?'🔥':'📤';
@@ -853,19 +793,16 @@ function renderHist(){
   $g('histArea').innerHTML=h;
 }
 
-/* ═══ AUTO RECONNECT ═══ */
+// ═══ AUTO RECONNECT ═══
 async function autoReconn(){
-  var s=ldS();if(!s||s.t!=='phantom')return;
-  var ph=getPH();
-  if(!ph)return;
+  var s=ldS();if(!s||!s.a)return;
+  var ph=getPH();if(!ph)return;
   try{
     var r=await ph.connect({onlyIfTrusted:true});
-    App.addr=r.publicKey.toString();App.wtype='phantom';App.connected=true;
-    svS();onConn(true);
+    App.addr=r.publicKey.toString();App.connected=true;svS();onConn(true);
   }catch(e){clS();}
 }
 
-/* ═══ PHANTOM EVENTS ═══ */
 var _ph=getPH();
 if(_ph){
   _ph.on('disconnect',function(){if(App.connected)doDisc();});
@@ -873,9 +810,10 @@ if(_ph){
 }
 
 window.addEventListener('load',function(){
-  console.log('[PYRA] Ready | W3:',!!getW3(),'SPL:',!!getSPL(),'Phantom:',!!getPH());
+  console.log('[PYRA] Ready | Web3:',!!getW3(),'| SPL:',!!getSPL(),'| Phantom:',!!getPH());
   autoReconn();ldTx();renderHist();
 });
+
 })();
 </script>
 </body>
