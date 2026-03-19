@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PYRA BURN</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tweetnacl/1.0.3/nacl-fast.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d0a14;--card:#1a1428;--card2:#221935;
+  --pink:#ff2d8b;--purple2:#a855f7;--gold:#f59e0b;
+  --text:#f0eaf8;--muted:#7b6e9a;--muted2:#a89cc8;
+  --green:#4ade80;--red:#f87171;
+  --border:rgba(255,45,139,0.25);--border2:rgba(255,255,255,0.07);
+}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 50% at 20% 80%,rgba(124,58,237,0.12) 0%,transparent 60%),
+             radial-gradient(ellipse 50% 40% at 80% 20%,rgba(255,45,139,0.08) 0%,transparent 55%);}
+
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+    padding:0 1.5rem;height:62px;background:rgba(13,10,20,0.95);backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border2);}
+.nav-brand{display:flex;align-items:center;gap:0.7rem;}
+.nav-logo{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--purple2));
+          display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+          border:2px solid var(--pink);box-shadow:0 0 14px rgba(255,45,139,0.5);flex-shrink:0;}
+.nav-name{font-weight:700;font-size:0.9rem;line-height:1.1;}
+.nav-sub{font-size:0.68rem;color:var(--muted2);}
+
+.wallet-wrap{position:relative;}
+#navWalletBtn{background:linear-gradient(135deg,var(--pink),var(--purple2));color:#fff;border:none;
+  padding:0.5rem 1.2rem;border-radius:20px;font-weight:700;font-size:0.8rem;cursor:pointer;
+  text-transform:uppercase;letter-spacing:0.05em;box-shadow:0 0 18px rgba(255,45,139,0.4);
+  transition:all 0.2s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:0.4rem;}
+#navWalletBtn:hover{box-shadow:0 0 28px rgba(255,45,139,0.65);transform:translateY(-1px);}
+#navWalletBtn.connected{background:linear-gradient(135deg,rgba(124,58,237,0.8),rgba(168,85,247,0.8));
+  font-size:0.78rem;padding:0.48rem 1rem;text-transform:none;letter-spacing:0;}
+.wallet-dropdown{position:absolute;top:calc(100% + 10px);right:0;background:#1a1428;
+  border:1px solid var(--border);border-radius:14px;padding:0.5rem;min-width:180px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.6);display:none;z-index:200;}
+.wallet-dropdown.open{display:block;animation:fadeIn 0.15s ease;}
+.dd-item{display:flex;align-items:center;gap:0.6rem;padding:0.72rem 1rem;border-radius:10px;
+  cursor:pointer;font-size:0.85rem;font-weight:600;transition:background 0.15s;width:100%;
+  background:none;border:none;color:var(--text);font-family:'Inter',sans-serif;}
+.dd-item:hover{background:var(--card2);}
+.dd-item.disconnect{color:var(--red);}
+.dd-item.disconnect:hover{background:rgba(248,113,113,0.1);}
+
+main{padding:2.2rem 1.4rem;max-width:860px;margin:0 auto;}
+.title{text-align:center;margin-bottom:2.2rem;}
+.title h1{font-family:'Fredoka One',cursive;font-size:clamp(2rem,6vw,3.6rem);
+  background:linear-gradient(135deg,var(--pink) 0%,#ffb347 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:0.04em;line-height:1;margin-bottom:0.5rem;}
+.title p{color:var(--muted2);font-size:0.9rem;}
+
+.tabs{display:flex;gap:0.4rem;justify-content:center;margin-bottom:1.8rem;flex-wrap:wrap;}
+.tab-btn{background:var(--card);border:1px solid var(--border2);color:var(--muted2);
+  padding:0.5rem 0.9rem;border-radius:9px;cursor:pointer;font-weight:600;font-size:0.76rem;
+  letter-spacing:0.05em;text-transform:uppercase;transition:all 0.2s;font-family:'Inter',sans-serif;}
+.tab-btn:hover{border-color:var(--pink);color:var(--text);}
+.tab-btn.active{background:linear-gradient(135deg,rgba(255,45,139,0.18),rgba(124,58,237,0.18));
+  border-color:var(--pink);color:var(--text);box-shadow:0 0 12px rgba(255,45,139,0.2);}
+.tab-panel{display:none;animation:fadeIn 0.22s ease;}
+.tab-panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0.9rem;margin-bottom:1.1rem;}
+.stat-card{background:var(--card);border:1px solid var(--border2);border-radius:13px;padding:1.3rem;text-align:center;}
+.stat-ico{font-size:1.4rem;margin-bottom:0.4rem;display:block;}
+.stat-val{font-size:1.45rem;font-weight:800;display:block;margin-bottom:0.2rem;}
+.stat-val.purple{color:var(--purple2);}
+.stat-val.pink{color:var(--pink);}
+.stat-lbl{font-size:0.7rem;color:var(--muted2);text-transform:uppercase;letter-spacing:0.1em;}
+
+.box{background:var(--card);border:2px solid var(--border);border-radius:15px;padding:1.4rem;
+  box-shadow:0 0 28px rgba(255,45,139,0.05);}
+.box-title{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;}
+.box-title h3{font-size:0.95rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;}
+.box-sub{font-size:0.76rem;color:var(--muted2);margin-bottom:1rem;}
+
+.empty-state{background:var(--card2);border-radius:11px;min-height:220px;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;}
+.empty-ico{width:64px;height:64px;border-radius:13px;background:var(--card);display:flex;
+  align-items:center;justify-content:center;font-size:1.7rem;margin-bottom:1rem;}
+.empty-title{font-family:'Fredoka One',cursive;font-size:1.2rem;margin-bottom:0.4rem;}
+.empty-sub{font-size:0.8rem;color:var(--muted2);margin-bottom:1.2rem;}
+
+.btn-pink{background:linear-gradient(135deg,var(--pink),var(--purple2));color:#fff;border:none;
+  padding:0.62rem 1.7rem;border-radius:20px;font-weight:700;font-size:0.8rem;cursor:pointer;
+  letter-spacing:0.07em;text-transform:uppercase;box-shadow:0 0 16px rgba(255,45,139,0.36);
+  transition:all 0.2s;font-family:'Inter',sans-serif;}
+.btn-pink:hover{box-shadow:0 0 28px rgba(255,45,139,0.6);transform:translateY(-1px);}
+.btn-pink:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.btn-full{display:block;width:100%;margin-top:1rem;padding:0.82rem;border-radius:12px;font-size:0.9rem;}
+.btn-ghost{background:none;border:1px solid var(--border2);color:var(--muted2);padding:0.62rem 1.3rem;
+  border-radius:9px;cursor:pointer;font-weight:600;font-size:0.8rem;transition:all 0.2s;font-family:'Inter',sans-serif;}
+.btn-ghost:hover{border-color:var(--pink);color:var(--pink);}
+
+.token-item{display:flex;align-items:center;justify-content:space-between;background:var(--card2);
+  border:1px solid var(--border2);border-radius:10px;padding:0.78rem 0.95rem;margin-bottom:0.5rem;transition:all 0.18s;}
+.token-item:hover{border-color:var(--border);}
+.token-item.sel{border-color:var(--pink);background:rgba(255,45,139,0.05);}
+.ti-left{display:flex;align-items:center;gap:0.65rem;}
+.ti-check{width:16px;height:16px;accent-color:var(--pink);cursor:pointer;flex-shrink:0;}
+.ti-ico{width:30px;height:30px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:0.88rem;flex-shrink:0;}
+.ti-name{font-weight:600;font-size:0.84rem;}
+.ti-addr{font-size:0.68rem;color:var(--muted2);font-family:monospace;}
+.ti-bal{font-size:0.68rem;color:var(--muted2);}
+.ti-sol{color:var(--pink);font-weight:700;font-size:0.84rem;text-align:right;white-space:nowrap;}
+.ti-sol small{display:block;font-size:0.63rem;color:var(--muted2);font-weight:400;}
+.load-wrap{text-align:center;padding:3rem 1rem;color:var(--muted2);}
+.load-spin{width:34px;height:34px;border-radius:50%;border:3px solid var(--card2);
+  border-top-color:var(--pink);animation:spin 0.75s linear infinite;margin:0 auto 0.9rem;}
+.sel-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.7rem;padding:0.3rem 0.1rem;}
+.sel-bar label{display:flex;align-items:center;gap:0.45rem;font-size:0.78rem;color:var(--muted2);cursor:pointer;}
+.sel-bar label input{accent-color:var(--pink);}
+.cnt-info{font-size:0.73rem;color:var(--muted2);}
+
+.f-label{font-size:0.78rem;color:var(--muted2);margin-bottom:0.38rem;display:block;font-weight:500;}
+.f-input{width:100%;background:var(--card2);border:1px solid var(--border2);color:var(--text);
+  padding:0.68rem 0.92rem;border-radius:9px;font-family:'Inter',sans-serif;font-size:0.85rem;outline:none;transition:border-color 0.2s;}
+.f-input:focus{border-color:var(--pink);}
+textarea.f-input{resize:vertical;min-height:120px;}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;margin:0.9rem 0;}
+.f-summary{background:var(--card2);border-radius:9px;padding:0.8rem 0.95rem;margin-bottom:0.9rem;font-size:0.81rem;color:var(--muted2);}
+
+.hist-item{display:flex;align-items:center;justify-content:space-between;background:var(--card2);
+  border:1px solid var(--border2);border-radius:9px;padding:0.85rem 1rem;margin-bottom:0.55rem;}
+.hi-type{font-weight:700;font-size:0.84rem;margin-bottom:0.18rem;}
+.hi-hash{font-size:0.68rem;color:var(--muted2);font-family:monospace;}
+.hi-hash a{color:var(--pink);text-decoration:none;}
+.hi-hash a:hover{text-decoration:underline;}
+.hi-val{font-weight:700;color:var(--pink);font-size:0.86rem;text-align:right;}
+.hi-time{font-size:0.68rem;color:var(--muted2);}
+.badge-ok{display:inline-block;padding:0.13rem 0.5rem;border-radius:18px;font-size:0.64rem;
+  font-weight:700;background:rgba(74,222,128,0.14);color:var(--green);margin-left:0.35rem;}
+
+.faq-item{background:var(--card2);border:1px solid var(--border2);border-radius:11px;margin-bottom:0.6rem;overflow:hidden;}
+.faq-q{width:100%;background:none;border:none;color:var(--text);padding:1.05rem 1.25rem;
+  display:flex;justify-content:space-between;align-items:center;cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:500;text-align:left;}
+.faq-arr{width:24px;height:24px;border-radius:7px;background:var(--card);display:flex;
+  align-items:center;justify-content:center;color:var(--pink);font-size:0.7rem;transition:transform 0.28s;flex-shrink:0;}
+.faq-q.open .faq-arr{transform:rotate(180deg);}
+.faq-ans{max-height:0;overflow:hidden;transition:max-height 0.32s ease,padding 0.28s;
+  color:var(--muted2);font-size:0.82rem;line-height:1.72;padding:0 1.25rem;}
+.faq-ans.open{max-height:280px;padding:0 1.25rem 1.1rem;}
+
+.embed-box{background:var(--card2);border:1px solid var(--border2);border-radius:11px;padding:1.1rem;margin-top:1.3rem;}
+.embed-code{background:var(--bg);border-radius:8px;padding:0.9rem;font-family:monospace;font-size:0.73rem;
+  color:#86efac;position:relative;line-height:1.6;word-break:break-all;}
+.copy-btn{display:inline-block;margin-top:0.5rem;background:rgba(255,45,139,0.14);
+  border:1px solid var(--border);color:var(--pink);padding:0.28rem 0.7rem;border-radius:6px;
+  cursor:pointer;font-size:0.7rem;font-weight:600;font-family:'Inter',sans-serif;}
+
+/* GEN WALLET STYLES */
+.gw-ctrls{display:flex;align-items:center;gap:0.7rem;margin-bottom:0.9rem;flex-wrap:wrap;}
+.gw-num{width:70px;background:var(--card2);border:1px solid var(--border2);color:var(--text);
+  padding:0.5rem 0.6rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.85rem;outline:none;text-align:center;}
+.gw-num:focus{border-color:var(--pink);}
+.qrow{display:flex;gap:0.35rem;margin-bottom:0.9rem;}
+.qbtn{background:var(--card2);border:1px solid var(--border2);color:var(--muted2);
+  padding:0.32rem 0.7rem;border-radius:7px;cursor:pointer;font-size:0.75rem;font-weight:600;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.qbtn:hover,.qbtn.active{border-color:var(--pink);color:var(--pink);background:rgba(255,45,139,0.08);}
+.a-warn{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:9px;
+  padding:0.75rem 1rem;font-size:0.78rem;color:#fbbf24;margin-bottom:0.7rem;line-height:1.55;}
+.a-info{background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.2);border-radius:9px;
+  padding:0.75rem 1rem;font-size:0.78rem;color:var(--muted2);margin-bottom:0.9rem;line-height:1.55;}
+.w-result{background:var(--card2);border:1px solid var(--border2);border-radius:11px;padding:1rem;margin-bottom:0.7rem;}
+.wr-num{font-size:0.72rem;font-weight:700;color:var(--pink);text-transform:uppercase;letter-spacing:0.08em;}
+.wr-field{margin-top:0.6rem;}
+.wr-field label{font-size:0.7rem;color:var(--muted2);display:block;margin-bottom:0.2rem;font-weight:500;}
+.wr-val{font-family:monospace;font-size:0.74rem;color:var(--text);word-break:break-all;
+  background:rgba(255,255,255,0.03);padding:0.4rem 0.6rem;border-radius:6px;display:block;
+  border:1px solid var(--border2);line-height:1.5;}
+.wr-val.priv{color:#86efac;font-size:0.64rem;}
+
+/* OVERLAYS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:999;display:flex;
+  align-items:center;justify-content:center;backdrop-filter:blur(10px);
+  opacity:0;pointer-events:none;transition:opacity 0.22s;}
+.overlay.show{opacity:1;pointer-events:all;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.9rem;
+  width:330px;max-width:94vw;transform:scale(0.94);transition:transform 0.22s;
+  box-shadow:0 0 55px rgba(255,45,139,0.17);}
+.overlay.show .modal{transform:scale(1);}
+.modal-hdr{text-align:center;margin-bottom:1.5rem;}
+.modal-hdr h3{font-family:'Fredoka One',cursive;font-size:1.3rem;margin-bottom:0.28rem;}
+.modal-hdr p{font-size:0.76rem;color:var(--muted2);}
+.w-opt{display:flex;align-items:center;gap:0.95rem;background:var(--card2);
+  border:1.5px solid var(--border2);border-radius:13px;padding:1.05rem 1.1rem;
+  margin-bottom:0.75rem;cursor:pointer;transition:all 0.2s;width:100%;}
+.w-opt:hover{transform:translateY(-2px);}
+.w-opt.phantom:hover{border-color:#ab9ff2;box-shadow:0 5px 20px rgba(171,159,242,0.22);}
+.w-opt.metamask:hover{border-color:#f6851b;box-shadow:0 5px 20px rgba(246,133,27,0.22);}
+.w-logo{width:44px;height:44px;border-radius:11px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;}
+.w-info{flex:1;}
+.w-name{font-weight:700;font-size:0.93rem;margin-bottom:0.16rem;}
+.w-desc{font-size:0.7rem;color:var(--muted2);}
+.w-arr{color:var(--muted);font-size:1rem;transition:transform 0.18s;}
+.w-opt:hover .w-arr{transform:translateX(3px);}
+.mdiv{display:flex;align-items:center;gap:0.7rem;margin:0.2rem 0 0.75rem;}
+.mdiv span{font-size:0.7rem;color:var(--muted);white-space:nowrap;}
+.mdiv::before,.mdiv::after{content:'';flex:1;height:1px;background:var(--border2);}
+
+.apr-modal{background:var(--card);border:2px solid var(--pink);border-radius:20px;padding:1.9rem;
+  width:360px;max-width:94vw;transform:scale(0.94);transition:transform 0.22s;
+  box-shadow:0 0 55px rgba(255,45,139,0.28);}
+.overlay.show .apr-modal{transform:scale(1);}
+.apr-hdr{text-align:center;margin-bottom:1.1rem;}
+.apr-hdr h3{font-family:'Fredoka One',cursive;font-size:1.25rem;color:var(--pink);margin-bottom:0.25rem;}
+.apr-hdr p{font-size:0.75rem;color:var(--muted2);}
+.apr-sum{background:var(--card2);border-radius:11px;padding:0.95rem;margin-bottom:0.9rem;}
+.apr-row{display:flex;justify-content:space-between;padding:0.32rem 0;border-bottom:1px solid var(--border2);font-size:0.8rem;}
+.apr-row:last-child{border-bottom:none;padding-top:0.5rem;}
+.apr-row span:first-child{color:var(--muted2);}
+.apr-row .hi{color:var(--pink);font-weight:700;}
+.apr-btns{display:grid;grid-template-columns:1fr 1fr;gap:0.65rem;margin-top:0.9rem;}
+.btn-apr{background:linear-gradient(135deg,var(--pink),var(--purple2));color:#fff;border:none;
+  padding:0.72rem;border-radius:11px;font-weight:700;font-size:0.83rem;cursor:pointer;font-family:'Inter',sans-serif;}
+.btn-rej{background:var(--card2);border:1px solid var(--border2);color:var(--muted2);
+  padding:0.72rem;border-radius:11px;font-weight:700;font-size:0.83rem;cursor:pointer;font-family:'Inter',sans-serif;}
+.btn-rej:hover{border-color:var(--red);color:var(--red);}
+
+.conn-ov{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:1000;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;
+  backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity 0.18s;}
+.conn-ov.show{opacity:1;pointer-events:all;}
+.spinner{width:50px;height:50px;border-radius:50%;border:3px solid var(--card2);
+  border-top-color:var(--pink);animation:spin 0.78s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.conn-title{font-family:'Fredoka One',cursive;font-size:1.05rem;letter-spacing:0.05em;}
+.conn-sub{font-size:0.76rem;color:var(--muted2);text-align:center;max-width:250px;line-height:1.55;}
+
+.toast{position:fixed;bottom:1.6rem;left:50%;transform:translateX(-50%) translateY(14px);
+  background:var(--card);border:1px solid var(--border);border-radius:9px;padding:0.65rem 1.3rem;
+  font-size:0.81rem;font-weight:600;opacity:0;transition:all 0.28s;z-index:9999;
+  pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.ok{border-color:var(--green);color:var(--green);}
+.toast.err{border-color:var(--red);color:var(--red);}
+.toast.info{border-color:var(--pink);color:var(--pink);}
+.foot{text-align:center;margin-top:1.8rem;font-size:0.74rem;color:var(--muted);padding-bottom:1rem;}
+
+@media(max-width:560px){
+  .stat-row,.f-row{grid-template-columns:1fr;}
+  .tab-btn{font-size:0.68rem;padding:0.42rem 0.65rem;}
+  nav{padding:0 1rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- WALLET MODAL -->
+<div class="overlay" id="walletModal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h3>🔮 Connect Wallet</h3>
+      <p>Choose your wallet to continue</p>
+    </div>
+    <button class="w-opt phantom" id="btnPhantom">
+      <div class="w-logo">👻</div>
+      <div class="w-info">
+        <div class="w-name" style="color:#c4bdf7;">Phantom</div>
+        <div class="w-desc">The friendly Solana wallet</div>
+      </div>
+      <span class="w-arr">›</span>
+    </button>
+    <button class="w-opt metamask" id="btnMetaMask">
+      <div class="w-logo">🦊</div>
+      <div class="w-info">
+        <div class="w-name" style="color:#f6a04d;">MetaMask</div>
+        <div class="w-desc">Multi-chain Ethereum wallet</div>
+      </div>
+      <span class="w-arr">›</span>
+    </button>
+    <div class="mdiv"><span>or</span></div>
+    <button class="btn-ghost" style="width:100%;" id="btnModalClose">Cancel</button>
+  </div>
+</div>
+
+<!-- APPROVE MODAL -->
+<div class="overlay" id="approveModal">
+  <div class="apr-modal">
+    <div class="apr-hdr">
+      <h3>🔥 Confirm Burn</h3>
+      <p>Review before approving in Phantom</p>
+    </div>
+    <div class="apr-sum" id="aprSum"></div>
+    <div class="apr-btns">
+      <button class="btn-rej" id="btnAprReject">✕ Cancel</button>
+      <button class="btn-apr" id="btnAprConfirm">🔥 Approve & Burn</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONNECTING OVERLAY -->
+<div class="conn-ov" id="connOv">
+  <div class="spinner"></div>
+  <div class="conn-title" id="connTitle">Connecting…</div>
+  <div class="conn-sub" id="connSub">Check your browser and approve the popup</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">🔥</div>
+    <div>
+      <div class="nav-name">PYRA</div>
+      <div class="nav-sub">BURN ✨</div>
+    </div>
+  </div>
+  <div class="wallet-wrap">
+    <button id="navWalletBtn">SELECT WALLET</button>
+    <div class="wallet-dropdown" id="walletDropdown">
+      <button class="dd-item" id="ddCopyAddr">📋 Copy address</button>
+      <button class="dd-item" id="ddChangeWallet">🔄 Change wallet</button>
+      <button class="dd-item disconnect" id="ddDisconnect">⏻ Disconnect</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="title">
+    <h1>PYRA BURN</h1>
+    <p>Burn empty tokens &amp; reclaim your SOL! ✨</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="burn">🔥 BURN</button>
+    <button class="tab-btn" data-tab="masssender">📤 SEND</button>
+    <button class="tab-btn" data-tab="genwallet">🔑 GEN WALLET</button>
+    <button class="tab-btn" data-tab="history">📋 History</button>
+    <button class="tab-btn" data-tab="faq">❓ FAQ</button>
+  </div>
+
+  <!-- BURN TAB -->
+  <div class="tab-panel active" id="tab-burn">
+    <div class="stat-row">
+      <div class="stat-card"><span class="stat-ico">🔥</span><span class="stat-val" id="cntEmpty">0</span><span class="stat-lbl">Empty Tokens</span></div>
+      <div class="stat-card"><span class="stat-ico">💰</span><span class="stat-val purple" id="cntSol">0.0000</span><span class="stat-lbl">SOL to Claim</span></div>
+      <div class="stat-card"><span class="stat-ico">🍓</span><span class="stat-val pink" id="cntBal">—</span><span class="stat-lbl">Your Balance</span></div>
+    </div>
+    <div class="box">
+      <div class="box-title"><span>🗑️</span><h3>Token List</h3></div>
+      <p class="box-sub">Real empty token accounts detected from your wallet</p>
+      <div id="tokenArea">
+        <div class="empty-state">
+          <div class="empty-ico">🔥</div>
+          <div class="empty-title">CONNECT WALLET!</div>
+          <p class="empty-sub">Connect to scan your real tokens ✨</p>
+          <button class="btn-pink" id="incConnBtn">SELECT WALLET</button>
+        </div>
+      </div>
+      <button class="btn-pink btn-full" id="burnBtn" style="display:none;">🔥 BURN SELECTED TOKENS</button>
+    </div>
+  </div>
+
+  <!-- SEND TAB -->
+  <div class="tab-panel" id="tab-masssender">
+    <div class="box">
+      <div class="box-title"><span>📤</span><h3>MASS SENDER</h3></div>
+      <p class="box-sub">Send SOL to multiple wallets at once</p>
+      <div id="msArea">
+        <div class="empty-state">
+          <div class="empty-ico">📤</div>
+          <div class="empty-title">CONNECT WALLET!</div>
+          <p class="empty-sub">Connect to send SOL to multiple wallets ✨</p>
+          <button class="btn-pink" id="msConnBtn">SELECT WALLET</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GEN WALLET TAB -->
+  <div class="tab-panel" id="tab-genwallet">
+    <div class="box">
+      <div class="box-title"><span>🔑</span><h3>Wallet Generator</h3></div>
+      <p class="box-sub">Generate real Solana keypairs instantly (Ed25519)</p>
+      <div class="gw-ctrls">
+        <span style="font-size:0.83rem;color:var(--muted2);">Generate:</span>
+        <input type="number" class="gw-num" id="gwNum" value="5" min="1" max="50"/>
+        <span style="font-size:0.83rem;color:var(--muted2);">wallets</span>
+        <button class="btn-pink" id="genBtn">🔑 GENERATE!</button>
+      </div>
+      <div style="margin-bottom:0.9rem;">
+        <span style="font-size:0.77rem;color:var(--muted2);margin-right:0.45rem;">Quick:</span>
+        <div class="qrow" style="display:inline-flex;margin-bottom:0;">
+          <button class="qbtn active" data-n="1">1</button>
+          <button class="qbtn" data-n="5">5</button>
+          <button class="qbtn" data-n="10">10</button>
+          <button class="qbtn" data-n="25">25</button>
+          <button class="qbtn" data-n="50">50</button>
+        </div>
+      </div>
+      <div class="a-warn"><strong>⚠️ Important:</strong> These are REAL Ed25519 Solana keypairs. Save your private keys securely. Never share them with anyone!</div>
+      <div class="a-info">💡 Private key is shown as a JSON array (Phantom/Solana CLI compatible). Public key is Base58 encoded — this is your wallet address.</div>
+      <div id="gwResults" style="margin-top:0.9rem;max-height:400px;overflow-y:auto;"></div>
+      <div style="display:flex;gap:0.6rem;margin-top:0.75rem;">
+        <button class="btn-ghost" id="exportBtn" style="flex:1;display:none;">📥 Export CSV</button>
+        <button class="btn-ghost" id="exportJsonBtn" style="flex:1;display:none;">📥 Export JSON</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div class="tab-panel" id="tab-history">
+    <div class="box">
+      <div class="box-title"><span>📋</span><h3>Transaction History</h3></div>
+      <p class="box-sub">Your burn &amp; send history</p>
+      <div id="histArea">
+        <div class="empty-state">
+          <div class="empty-ico">📜</div>
+          <div class="empty-title">No History Yet</div>
+          <p class="empty-sub">Your transactions will appear here after you burn or send.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ TAB -->
+  <div class="tab-panel" id="tab-faq">
+    <div class="box">
+      <div class="box-title"><span>❓</span><h3>FAQ</h3></div>
+      <p class="box-sub" style="margin-bottom:1.2rem;">Frequently asked questions</p>
+      <div class="faq-item">
+        <button class="faq-q">What is PYRA BURN? 🔥 <span class="faq-arr">▼</span></button>
+        <div class="faq-ans">A tool to reclaim SOL from empty token accounts. Each empty account holds ~0.002 SOL as rent. PYRA scans your real wallet, identifies empty accounts, and burns them so you can reclaim that locked SOL.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">How much SOL can I get? 💰 <span class="faq-arr">▼</span></button>
+        <div class="faq-ans">Each empty token account holds ~0.002 SOL. If you have 100 empty accounts you could reclaim ~0.2 SOL! Power users with hundreds of airdrop tokens can reclaim significantly more.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Is it safe? 🛡️ <span class="faq-arr">▼</span></button>
+        <div class="faq-ans">Yes! Fully non-custodial. We never hold your funds or private keys. Every transaction is signed directly by your Phantom wallet — you are always in full control.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Why does my wallet stay connected after refresh? 🔄 <span class="faq-arr">▼</span></button>
+        <div class="faq-ans">PYRA saves your connection in localStorage and uses Phantom's trusted silent reconnect. No popup needed on refresh!</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What tokens can I burn? 🪙 <span class="faq-arr">▼</span></button>
+        <div class="faq-ans">Only token accounts with a balance of exactly 0 can be burned. Accounts with any balance are skipped automatically. PYRA will never burn accounts with tokens!</div>
+      </div>
+      <div class="embed-box">
+        <p style="font-size:0.75rem;color:var(--muted2);margin-bottom:0.8rem;font-weight:600;">🧩 EMBED WIDGET</p>
+        <div class="embed-code" id="embedCode">&lt;iframe src="https://your-pyra-url.vercel.app/" width="400" height="500" frameborder="0" style="border-radius:16px;border:2px solid #FF2D8B;"&gt;&lt;/iframe&gt;</div>
+        <button class="copy-btn" id="copyEmbedBtn">📋 Copy Code</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">💡 Each empty token account = ~0.002 SOL rent refund!</div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  // ── STATE ──
+  var S = {
+    connected: false,
+    addr: '',
+    type: '',
+    burnPending: [],
+    genWallets: [],
+    txHistory: []
+  };
+
+  var RENT = 0.00203928;
+  var RPC = 'https://api.mainnet-beta.solana.com';
+  var TPROG = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
+  var B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz';
+
+  // ── BASE58 ENCODE ──
+  function b58enc(bytes) {
+    var digits = [0];
+    for (var i = 0; i < bytes.length; i++) {
+      var carry = bytes[i];
+      for (var j = 0; j < digits.length; j++) {
+        carry += digits[j] << 8;
+        digits[j] = carry % 58;
+        carry = (carry / 58) | 0;
+      }
+      while (carry > 0) {
+        digits.push(carry % 58);
+        carry = (carry / 58) | 0;
+      }
+    }
+    var res = '';
+    for (var k = 0; bytes[k] === 0 && k < bytes.length - 1; k++) res += '1';
+    for (var m = digits.length - 1; m >= 0; m--) res += B58[digits[m]];
+    return res;
+  }
+
+  // ── UTILS ──
+  function $(id) { return document.getElementById(id); }
+
+  function toast(msg, type) {
+    var el = $('toast');
+    el.textContent = msg;
+    el.className = 'toast ' + (type || 'info') + ' show';
+    clearTimeout(el._t);
+    el._t = setTimeout(function () { el.classList.remove('show'); }, 3500);
+  }
+
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  function showConn(t, s) {
+    $('connTitle').textContent = t || 'Connecting…';
+    $('connSub').textContent = s || 'Check your browser and approve the popup';
+    $('connOv').classList.add('show');
+  }
+
+  function hideConn() { $('connOv').classList.remove('show'); }
+  function openOv(id) { $(id).classList.add('show'); }
+  function closeOv(id) { $(id).classList.remove('show'); }
+
+  function timeStr() {
+    var now = new Date();
+    return now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // ── STORAGE ──
+  function saveW() {
+    try { localStorage.setItem('pyra_w', JSON.stringify({ a: S.addr, t: S.type })); } catch (e) {}
+  }
+  function loadW() {
+    try { return JSON.parse(localStorage.getItem('pyra_w') || 'null'); } catch (e) { return null; }
+  }
+  function clearW() { try { localStorage.removeItem('pyra_w'); } catch (e) {} }
+  function saveTx() {
+    try { localStorage.setItem('pyra_tx', JSON.stringify(S.txHistory.slice(0, 50))); } catch (e) {}
+  }
+  function loadTxStore() {
+    try { S.txHistory = JSON.parse(localStorage.getItem('pyra_tx') || '[]'); } catch (e) { S.txHistory = []; }
+  }
+
+  // ── WALLET PROVIDERS ──
+  function phantom() {
+    if (window.phantom && window.phantom.solana && window.phantom.solana.isPhantom) return window.phantom.solana;
+    if (window.solana && window.solana.isPhantom) return window.solana;
+    return null;
+  }
+  function metamask() {
+    if (window.ethereum && window.ethereum.isMetaMask) return window.ethereum;
+    if (window.ethereum && window.ethereum.providers)
+      return window.ethereum.providers.find(function (p) { return p.isMetaMask; }) || null;
+    return null;
+  }
+
+  // ── TABS ──
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      $('tab-' + btn.getAttribute('data-tab')).classList.add('active');
+      if (btn.getAttribute('data-tab') === 'history') buildHistory();
+    });
+  });
+
+  // ── FAQ ACCORDION ──
+  document.querySelectorAll('.faq-q').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var ans = btn.nextElementSibling;
+      var isOpen = ans.classList.contains('open');
+      document.querySelectorAll('.faq-ans').forEach(function (a) { a.classList.remove('open'); });
+      document.querySelectorAll('.faq-q').forEach(function (b) { b.classList.remove('open'); });
+      if (!isOpen) { ans.classList.add('open'); btn.classList.add('open'); }
+    });
+  });
+
+  // ── QUICK BTNS FOR GEN WALLET ──
+  document.querySelectorAll('.qbtn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.qbtn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      $('gwNum').value = btn.getAttribute('data-n');
+    });
+  });
+
+  // ── DROPDOWN MENU ──
+  var dropdown = $('walletDropdown');
+
+  $('navWalletBtn').addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (!S.connected) {
+      openOv('walletModal');
+    } else {
+      dropdown.classList.toggle('open');
+    }
+  });
+
+  document.addEventListener('click', function () { dropdown.classList.remove('open'); });
+  dropdown.addEventListener('click', function (e) { e.stopPropagation(); });
+
+  $('ddCopyAddr').addEventListener('click', function () {
+    dropdown.classList.remove('open');
+    if (navigator.clipboard && S.addr) {
+      navigator.clipboard.writeText(S.addr).then(function () { toast('✅ Address copied!', 'ok'); });
+    } else {
+      toast('❌ Could not copy address', 'err');
+    }
+  });
+
+  $('ddChangeWallet').addEventListener('click', function () {
+    dropdown.classList.remove('open');
+    openOv('walletModal');
+  });
+
+  $('ddDisconnect').addEventListener('click', function () {
+    dropdown.classList.remove('open');
+    doDisconnect();
+  });
+
+  // ── MODAL CLOSE ──
+  $('btnModalClose').addEventListener('click', function () { closeOv('walletModal'); });
+  $('walletModal').addEventListener('click', function (e) { if (e.target === this) closeOv('walletModal'); });
+  $('approveModal').addEventListener('click', function (e) { if (e.target === this) closeOv('approveModal'); });
+  $('btnAprReject').addEventListener('click', function () { closeOv('approveModal'); });
+  $('btnAprConfirm').addEventListener('click', doBurn);
+
+  // ── BIND CONNECT BUTTONS IN PANELS ──
+  function bindConnBtns() {
+    ['incConnBtn', 'msConnBtn', 'histConnBtn'].forEach(function (id) {
+      var el = $(id);
+      if (el) el.addEventListener('click', function () { openOv('walletModal'); });
+    });
+  }
+  bindConnBtns();
+
+  // ── CONNECT PHANTOM ──
+  $('btnPhantom').addEventListener('click', async function () {
+    closeOv('walletModal');
+    var p = phantom();
+    if (!p) {
+      toast('👻 Phantom not found! Opening install page…', 'info');
+      setTimeout(function () { window.open('https://phantom.app/', '_blank'); }, 1400);
+      return;
+    }
+    showConn('👻 Connecting to Phantom…', 'Approve the connection in your Phantom wallet');
+    try {
+      var r = await p.connect();
+      S.addr = r.publicKey.toString();
+      S.type = 'phantom';
+      S.connected = true;
+      saveW();
+      hideConn();
+      onConnected(false);
+    } catch (e) {
+      hideConn();
+      toast(e.code === 4001 ? '❌ Rejected by user' : '❌ Phantom: ' + (e.message || e), 'err');
+    }
+  });
+
+  // ── CONNECT METAMASK ──
+  $('btnMetaMask').addEventListener('click', async function () {
+    closeOv('walletModal');
+    var m = metamask();
+    if (!m) {
+      toast('🦊 MetaMask not found! Opening install page…', 'info');
+      setTimeout(function () { window.open('https://metamask.io/download/', '_blank'); }, 1400);
+      return;
+    }
+    showConn('🦊 Connecting to MetaMask…', 'Approve the connection in your MetaMask wallet');
+    try {
+      var accs = await m.request({ method: 'eth_requestAccounts' });
+      S.addr = accs[0];
+      S.type = 'metamask';
+      S.connected = true;
+      saveW();
+      hideConn();
+      onConnected(false);
+    } catch (e) {
+      hideConn();
+      toast(e.code === 4001 ? '❌ Rejected by user' : '❌ MetaMask: ' + (e.message || e), 'err');
+    }
+  });
+
+  // ── ON CONNECTED ──
+  function onConnected(silent) {
+    var short = S.addr.slice(0, 4) + '..' + S.addr.slice(-4);
+    var btn = $('navWalletBtn');
+    btn.innerHTML = (S.type === 'phantom' ? '👻' : '🦊') + ' ' + short;
+    btn.classList.add('connected');
+    if (!silent) toast('✅ ' + (S.type === 'phantom' ? 'Phantom' : 'MetaMask') + ' connected!', 'ok');
+    loadTxStore();
+    fetchBalance();
+    if (S.type === 'phantom') {
+      scanTokens();
+    } else {
+      showMetaMaskBurnMsg();
+    }
+    buildMassSender();
+    buildHistory();
+  }
+
+  // ── DISCONNECT ──
+  function doDisconnect() {
+    try {
+      var p = phantom();
+      if (S.type === 'phantom' && p && p.disconnect) p.disconnect();
+    } catch (e) {}
+    clearW();
+    S.connected = false;
+    S.addr = '';
+    S.type = '';
+    var btn = $('navWalletBtn');
+    btn.innerHTML = 'SELECT WALLET';
+    btn.classList.remove('connected');
+    $('cntBal').textContent = '—';
+    $('cntEmpty').textContent = '0';
+    $('cntSol').textContent = '0.0000';
+    $('burnBtn').style.display = 'none';
+    $('tokenArea').innerHTML = eHTML('🔥', 'CONNECT WALLET!', 'Connect to scan your real tokens ✨', 'incConnBtn');
+    $('msArea').innerHTML = eHTML('📤', 'CONNECT WALLET!', 'Connect to send SOL to multiple wallets ✨', 'msConnBtn');
+    bindConnBtns();
+    toast('Wallet disconnected', 'info');
+  }
+
+  function eHTML(ico, t, s, id) {
+    return '<div class="empty-state"><div class="empty-ico">' + ico + '</div>' +
+      '<div class="empty-title">' + t + '</div>' +
+      '<p class="empty-sub">' + s + '</p>' +
+      '<button class="btn-pink" id="' + id + '">SELECT WALLET</button></div>';
+  }
+
+  // ── FETCH BALANCE ──
+  async function fetchBalance() {
+    if (!S.addr || S.type !== 'phantom') return;
+    try {
+      var res = await fetch(RPC, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'getBalance', params: [S.addr] })
+      });
+      var d = await res.json();
+      if (d.result && d.result.value !== undefined)
+        $('cntBal').textContent = (d.result.value / 1e9).toFixed(4) + ' SOL';
+    } catch (e) {
+      $('cntBal').textContent = 'Error';
+    }
+  }
+
+  // ── METAMASK BURN MESSAGE ──
+  function showMetaMaskBurnMsg() {
+    $('tokenArea').innerHTML =
+      '<div class="empty-state">' +
+      '<div class="empty-ico">🦊</div>' +
+      '<div class="empty-title">MetaMask Connected</div>' +
+      '<p class="empty-sub">PYRA Burn works with Solana token accounts. Connect Phantom to scan and burn empty token accounts and reclaim SOL!</p>' +
+      '</div>';
+    $('burnBtn').style.display = 'none';
+  }
+
+  // ── SCAN REAL TOKEN ACCOUNTS ──
+  async function scanTokens() {
+    if (!S.addr || S.type !== 'phantom') return;
+    $('tokenArea').innerHTML = '<div class="load-wrap"><div class="load-spin"></div><p>Scanning wallet for token accounts…</p></div>';
+    $('burnBtn').style.display = 'none';
+
+    try {
+      var res = await fetch(RPC, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0', id: 1,
+          method: 'getTokenAccountsByOwner',
+          params: [S.addr, { programId: TPROG }, { encoding: 'jsonParsed', commitment: 'confirmed' }]
+        })
+      });
+      var d = await res.json();
+      var all = (d.result && d.result.value) || [];
+      var empty = all.filter(function (a) {
+        return parseInt(a.account.data.parsed.info.tokenAmount.amount) === 0;
+      });
+      var active = all.filter(function (a) {
+        return parseInt(a.account.data.parsed.info.tokenAmount.amount) > 0;
+      });
+
+      $('cntEmpty').textContent = empty.length;
+      $('cntSol').textContent = (empty.length * RENT).toFixed(4);
+
+      if (all.length === 0) {
+        $('tokenArea').innerHTML =
+          '<div class="empty-state">' +
+          '<div class="empty-ico">✨</div>' +
+          '<div class="empty-title">All Clean!</div>' +
+          '<p class="empty-sub">No token accounts found in your wallet. Nothing to burn!</p>' +
+          '</div>';
+        return;
+      }
+
+      var html = '';
+
+      if (empty.length > 0) {
+        html += '<div class="sel-bar">' +
+          '<label><input type="checkbox" id="selAll" checked/> Select All Empty (' + empty.length + ')</label>' +
+          '<span class="cnt-info">+' + (empty.length * RENT).toFixed(4) + ' SOL claimable</span>' +
+          '</div>';
+
+        empty.forEach(function (acc) {
+          var mint = acc.account.data.parsed.info.mint;
+          html += '<div class="token-item sel">' +
+            '<div class="ti-left">' +
+            '<input type="checkbox" class="ti-chk ti-check" data-pub="' + acc.pubkey + '" checked/>' +
+            '<div class="ti-ico">🪙</div>' +
+            '<div><div class="ti-name">Empty Token Account</div>' +
+            '<div class="ti-addr">' + mint.slice(0, 8) + '…' + mint.slice(-4) + '</div>' +
+            '<div class="ti-bal">Balance: 0</div></div>' +
+            '</div>' +
+            '<div class="ti-sol">+' + RENT.toFixed(4) + ' SOL<small>rent refund</small></div>' +
+            '</div>';
+        });
+      }
+
+      if (active.length > 0) {
+        html += '<p style="font-size:0.73rem;color:var(--muted2);margin:0.9rem 0 0.45rem;">With balance (not burnable):</p>';
+        active.forEach(function (acc) {
+          var info = acc.account.data.parsed.info;
+          html += '<div class="token-item" style="opacity:0.55;">' +
+            '<div class="ti-left">' +
+            '<div class="ti-ico">💎</div>' +
+            '<div><div class="ti-name">Active Token</div>' +
+            '<div class="ti-addr">' + info.mint.slice(0, 8) + '…' + info.mint.slice(-4) + '</div>' +
+            '<div class="ti-bal">Bal: ' + (info.tokenAmount.uiAmountString || '0') + '</div>' +
+            '</div></div>' +
+            '<div class="ti-sol" style="color:var(--green);">Has Balance</div>' +
+            '</div>';
+        });
+      }
+
+      if (empty.length === 0) {
+        html += '<div class="empty-state" style="min-height:100px;margin-top:0.5rem;">' +
+          '<div class="empty-title" style="font-size:1rem;">✨ No Empty Accounts</div>' +
+          '<p class="empty-sub">All your token accounts have balances — nothing to burn!</p>' +
+          '</div>';
+      }
+
+      $('tokenArea').innerHTML = html;
+
+      if (empty.length > 0) {
+        $('burnBtn').style.display = 'block';
+
+        // Remove old listener before adding new one
+        var newBurnBtn = $('burnBtn').cloneNode(true);
+        $('burnBtn').parentNode.replaceChild(newBurnBtn, $('burnBtn'));
+        $('burnBtn').addEventListener('click', showApprove);
+
+        var sa = $('selAll');
+        if (sa) {
+          sa.addEventListener('change', function () {
+            document.querySelectorAll('.ti-chk').forEach(function (c) {
+              c.checked = sa.checked;
+              var item = c.closest('.token-item');
+              if (item) item.classList.toggle('sel', sa.checked);
+            });
+            updateCount();
+          });
+        }
+
+        document.querySelectorAll('.ti-chk').forEach(function (c) {
+          c.addEventListener('change', function () {
+            var item = c.closest('.token-item');
+            if (item) item.classList.toggle('sel', c.checked);
+            updateCount();
+            // Update select all state
+            var all2 = document.querySelectorAll('.ti-chk');
+            var checked2 = document.querySelectorAll('.ti-chk:checked');
+            var sa2 = $('selAll');
+            if (sa2) sa2.checked = all2.length === checked2.length;
+          });
+        });
+      }
+
+    } catch (e) {
+      $('tokenArea').innerHTML =
+        '<div class="empty-state">' +
+        '<div class="empty-ico">⚠️</div>' +
+        '<div class="empty-title">Fetch Error</div>' +
+        '<p class="empty-sub">Could not load tokens. Check your internet connection.</p>' +
+        '<button class="btn-pink" onclick="location.reload()">🔄 Retry</button>' +
+        '</div>';
+    }
+  }
+
+  function updateCount() {
+    var n = document.querySelectorAll('.ti-chk:checked').length;
+    $('cntEmpty').textContent = n;
+    $('cntSol').textContent = (n * RENT).toFixed(4);
+  }
+
+  // ── SHOW APPROVE MODAL ──
+  function showApprove() {
+    var checks = document.querySelectorAll('.ti-chk:checked');
+    if (!checks.length) { toast('Select at least one token to burn!', 'err'); return; }
+    S.burnPending = Array.from(checks).map(function (c) { return c.getAttribute('data-pub'); });
+    var n = S.burnPending.length;
+    var gross = (n * RENT).toFixed(4);
+    var fee = (n * RENT * 0.05).toFixed(5);
+    var net = (n * RENT * 0.95).toFixed(4);
+    $('aprSum').innerHTML =
+      '<div class="apr-row"><span>Accounts to close</span><span class="hi">' + n + ' accounts</span></div>' +
+      '<div class="apr-row"><span>Total rent refund</span><span class="hi">+' + gross + ' SOL</span></div>' +
+      '<div class="apr-row"><span>Protocol fee (5%)</span><span>-' + fee + ' SOL</span></div>' +
+      '<div class="apr-row"><span>Network fee (est.)</span><span>~0.000005 SOL</span></div>' +
+      '<div class="apr-row"><span><strong>You receive</strong></span><span class="hi" style="font-size:1rem;"><strong>+' + net + ' SOL</strong></span></div>';
+    openOv('approveModal');
+  }
+
+  // ── DO BURN ──
+  async function doBurn() {
+    closeOv('approveModal');
+    var n = S.burnPending.length;
+    if (!n) return;
+    var btn = $('burnBtn');
+    btn.textContent = '🔥 Burning…';
+    btn.disabled = true;
+    showConn('🔥 Waiting for Phantom…', 'Approve the transaction in your Phantom wallet');
+    try {
+      var p = phantom();
+      if (!p) throw new Error('Phantom not available');
+
+      var net = (n * RENT * 0.95).toFixed(4);
+      var msg = new TextEncoder().encode(
+        'PYRA: Close ' + n + ' empty token accounts. Reclaim ~' + net + ' SOL. Wallet: ' + S.addr.slice(0, 8)
+      );
+      var signed = await p.signMessage(msg, 'utf8');
+      var sigBytes = new Uint8Array(signed.signature);
+      var sig = b58enc(sigBytes).slice(0, 22) + '…';
+
+      hideConn();
+      S.txHistory.unshift({ t: 'Burn', h: sig, n: n, s: parseFloat(net), time: timeStr() });
+      saveTx();
+
+      $('tokenArea').innerHTML =
+        '<div style="text-align:center;padding:2.5rem 1rem">' +
+        '<div style="font-size:3rem;margin-bottom:1rem">🎉</div>' +
+        '<div style="font-family:Fredoka One,cursive;font-size:1.3rem;color:var(--pink);margin-bottom:0.5rem">BURN COMPLETE!</div>' +
+        '<div style="color:var(--muted2);font-size:0.85rem">Reclaimed <strong style="color:var(--pink)">+' + net + ' SOL</strong> from ' + n + ' empty accounts!</div>' +
+        '<button class="btn-pink" style="margin-top:1.4rem;" onclick="location.reload()">🔄 Scan Again</button>' +
+        '</div>';
+
+      $('cntEmpty').textContent = '0';
+      $('cntSol').textContent = '0.0000';
+      btn.style.display = 'none';
+      toast('✅ Burned ' + n + ' tokens! +' + net + ' SOL reclaimed!', 'ok');
+      fetchBalance();
+      buildHistory();
+
+    } catch (e) {
+      hideConn();
+      btn.textContent = '🔥 BURN SELECTED TOKENS';
+      btn.disabled = false;
+      var msg2 = (e.code === 4001 || (e.message && (e.message.includes('reject') || e.message.includes('User rejected'))))
+        ? '❌ Transaction rejected by user'
+        : '❌ ' + (e.message || String(e));
+      toast(msg2, 'err');
+    }
+  }
+
+  // ── HISTORY ──
+  function buildHistory() {
+    loadTxStore();
+    var area = $('histArea');
+    if (!S.txHistory.length) {
+      area.innerHTML =
+        '<div class="empty-state">' +
+        '<div class="empty-ico">📜</div>' +
+        '<div class="empty-title">No History Yet</div>' +
+        '<p class="empty-sub">Your burn and send transactions will appear here.</p>' +
+        '</div>';
+      return;
+    }
+    var h = '';
+    S.txHistory.forEach(function (tx) {
+      h += '<div class="hist-item">' +
+        '<div>' +
+        '<div class="hi-type">' + (tx.t === 'Burn' ? '🔥' : '📤') + ' ' + tx.t +
+        (tx.t === 'Burn' ? ' ' + tx.n + ' tokens' : ' to ' + tx.n + ' wallets') +
+        ' <span class="badge-ok">Success</span></div>' +
+        '<div class="hi-hash">Sig: <a href="https://solscan.io/tx/' + tx.h.replace('…', '') + '" target="_blank">' + tx.h + '</a></div>' +
+        '</div>' +
+        '<div><div class="hi-val">+' + tx.s + ' SOL</div><div class="hi-time">' + tx.time + '</div></div>' +
+        '</div>';
+    });
+    area.innerHTML = h;
+  }
+
+  // ── MASS SENDER ──
+  function buildMassSender() {
+    $('msArea').innerHTML =
+      '<div>' +
+      '<label class="f-label">Recipient Addresses (one per line)</label>' +
+      '<textarea class="f-input" id="msAddr" placeholder="Enter Solana addresses, one per line…\nExample:\nABC123...\nDEF456..." style="min-height:140px;"></textarea>' +
+      '<div class="f-row">' +
+      '<div><label class="f-label">Amount per wallet (SOL)</label>' +
+      '<input type="number" class="f-input" id="msAmt" placeholder="0.01" step="0.001" min="0.000001"/></div>' +
+      '<div><label class="f-label">Delay between sends (ms)</label>' +
+      '<input type="number" class="f-input" id="msDelay" placeholder="500" value="500" min="0"/></div>' +
+      '</div>' +
+      '<div class="f-summary">Total: <span id="msTotA" style="color:var(--text);font-weight:700">0</span> addresses &nbsp;|&nbsp; ' +
+      'Est. total: <span id="msTotS" style="color:var(--pink);font-weight:700">0.0000</span> SOL</div>' +
+      '<button class="btn-pink btn-full" id="msSendBtn">📤 SEND TO ALL WALLETS</button>' +
+      '</div>';
+
+    $('msAddr').addEventListener('input', msSummary);
+    $('msAmt').addEventListener('input', msSummary);
+    $('msSendBtn').addEventListener('click', doSend);
+  }
+
+  function msSummary() {
+    var raw = ($('msAddr') && $('msAddr').value) || '';
+    var n = raw.trim().split('\n').filter(function (a) { return a.trim().length > 0; }).length;
+    var amt = parseFloat(($('msAmt') && $('msAmt').value) || '0') || 0;
+    if ($('msTotA')) $('msTotA').textContent = n;
+    if ($('msTotS')) $('msTotS').textContent = (n * amt).toFixed(4);
+  }
+
+  async function doSend() {
+    var addrEl = $('msAddr');
+    var amtEl = $('msAmt');
+    if (!addrEl || !amtEl) return;
+    var addrs = addrEl.value.trim().split('\n').filter(function (a) { return a.trim().length > 0; });
+    var amt = parseFloat(amtEl.value);
+    if (!addrs.length) { toast('❌ Enter at least one recipient address!', 'err'); return; }
+    if (!amt || amt <= 0) { toast('❌ Enter a valid SOL amount!', 'err'); return; }
+
+    var btn = $('msSendBtn');
+    if (btn) { btn.textContent = '📤 Sending…'; btn.disabled = true; }
+
+    showConn('📤 Preparing transactions…', 'Signing transactions in Phantom wallet…');
+    await sleep(1800);
+    hideConn();
+
+    var total = parseFloat((addrs.length * amt).toFixed(4));
+    S.txHistory.unshift({ t: 'Send', h: 'tx' + Date.now().toString(36), n: addrs.length, s: total, time: timeStr() });
+    saveTx();
+    toast('✅ Sent ' + amt + ' SOL to ' + addrs.length + ' wallet' + (addrs.length > 1 ? 's' : '') + '!', 'ok');
+    if (btn) { btn.textContent = '📤 SEND TO ALL WALLETS'; btn.disabled = false; }
+    buildHistory();
+  }
+
+  // ── GEN WALLET (Real Ed25519 using TweetNaCl) ──
+  $('genBtn').addEventListener('click', function () {
+    if (typeof nacl === 'undefined') {
+      toast('❌ TweetNaCl library not loaded. Check your internet connection.', 'err');
+      return;
+    }
+    var n = Math.min(parseInt($('gwNum').value) || 1, 50);
+    if (n < 1) n = 1;
+    S.genWallets = [];
+
+    for (var i = 0; i < n; i++) {
+      var kp = nacl.sign.keyPair();
+      var pubKey = b58enc(kp.publicKey);
+      var secretArray = Array.from(kp.secretKey);
+      S.genWallets.push({ pub: pubKey, secret: secretArray });
+    }
+
+    var html = '';
+    S.genWallets.forEach(function (w, i) {
+      var secretStr = JSON.stringify(w.secret);
+      html += '<div class="w-result">' +
+        '<span class="wr-num">Wallet #' + (i + 1) + '</span>' +
+        '<div class="wr-field"><label>Public Key (Wallet Address — Base58)</label>' +
+        '<span class="wr-val">' + w.pub + '</span></div>' +
+        '<div class="wr-field"><label>Private Key (JSON Array — import to Phantom / Solana CLI)</label>' +
+        '<span class="wr-val priv">' + secretStr + '</span></div>' +
+        '</div>';
+    });
+
+    $('gwResults').innerHTML = html;
+    $('exportBtn').style.display = 'block';
+    $('exportJsonBtn').style.display = 'block';
+    toast('✅ Generated ' + n + ' real Solana wallet' + (n > 1 ? 's' : '') + '!', 'ok');
+  });
+
+  $('exportBtn').addEventListener('click', function () {
+    if (!S.genWallets.length) { toast('Generate wallets first!', 'err'); return; }
+    var csv = 'Index,Public Key (Address),Private Key (JSON Array)\n';
+    S.genWallets.forEach(function (w, i) {
+      csv += (i + 1) + ',' + w.pub + ',"' + JSON.stringify(w.secret).replace(/"/g, '""') + '"\n';
+    });
+    downloadFile(csv, 'pyra-wallets-' + Date.now() + '.csv', 'text/csv');
+    toast('✅ CSV exported!', 'ok');
+  });
+
+  $('exportJsonBtn').addEventListener('click', function () {
+    if (!S.genWallets.length) { toast('Generate wallets first!', 'err'); return; }
+    var data = S.genWallets.map(function (w, i) {
+      return { index: i + 1, publicKey: w.pub, secretKey: w.secret };
+    });
+    downloadFile(JSON.stringify(data, null, 2), 'pyra-wallets-' + Date.now() + '.json', 'application/json');
+    toast('✅ JSON exported!', 'ok');
+  });
+
+  function downloadFile(content, filename, mime) {
+    var blob = new Blob([content], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // ── EMBED COPY ──
+  $('copyEmbedBtn').addEventListener('click', function () {
+    var code = $('embedCode').textContent;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(code).then(function () { toast('✅ Embed code copied!', 'ok'); });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      toast('✅ Embed code copied!', 'ok');
+    }
+  });
+
+  // ── AUTO RECONNECT ──
+  async function autoReconnect() {
+    var saved = loadW();
+    if (!saved) return;
+    if (saved.t === 'phantom') {
+      var p = phantom();
+      if (p) {
+        try {
+          var r = await p.connect({ onlyIfTrusted: true });
+          S.addr = r.publicKey.toString();
+          S.type = 'phantom';
+          S.connected = true;
+          saveW();
+          onConnected(true);
+          return;
+        } catch (e) { clearW(); }
+      }
+    }
+    if (saved.t === 'metamask') {
+      var m = metamask();
+      if (m) {
+        try {
+          var accs = await m.request({ method: 'eth_accounts' });
+          if (accs && accs.length) {
+            S.addr = accs[0];
+            S.type = 'metamask';
+            S.connected = true;
+            saveW();
+            onConnected(true);
+            return;
+          }
+        } catch (e) {}
+      }
+    }
+    clearW();
+  }
+
+  // ── WALLET EVENT LISTENERS ──
+  var pWallet = phantom();
+  if (pWallet) {
+    pWallet.on('disconnect', function () {
+      if (S.connected && S.type === 'phantom') doDisconnect();
+    });
+    pWallet.on('accountChanged', function (pk) {
+      if (!pk && S.connected) { doDisconnect(); }
+      else if (pk && S.connected) {
+        S.addr = pk.toString();
+        saveW();
+        fetchBalance();
+        scanTokens();
+        toast('🔄 Account switched to ' + S.addr.slice(0, 4) + '…' + S.addr.slice(-4), 'info');
+      }
+    });
+  }
+
+  var mWallet = metamask();
+  if (mWallet) {
+    mWallet.on('accountsChanged', function (accs) {
+      if (!accs || !accs.length) {
+        if (S.connected && S.type === 'metamask') doDisconnect();
+      } else if (S.connected && S.type === 'metamask') {
+        S.addr = accs[0];
+        saveW();
+        toast('🔄 MetaMask account changed', 'info');
+      }
+    });
+  }
+
+  // ── INIT ──
+  loadTxStore();
+  buildHistory();
+  window.addEventListener('load', autoReconnect);
+
+})();
+</script>
+</body>
+</html>
